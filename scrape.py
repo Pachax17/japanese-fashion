@@ -25,7 +25,7 @@ from mercapi import Mercapi
 from brands import BRANDS
 
 DATA_DIR = Path(__file__).parent / "data"
-BUYEE_ITEM_URL = "https://buyee.jp/item/mercari/{item_id}"
+BUYEE_ITEM_URL = "https://buyee.jp/mercari/item/{item_id}?conversionType=Mercari_DirectSearch"
 MERCARI_ITEM_URL = "https://jp.mercari.com/item/{item_id}"
 
 # Politeness / scope knobs

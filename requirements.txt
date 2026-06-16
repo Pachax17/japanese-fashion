@@ -1,3 +1,5 @@
 # (C) Claude-generated
 mercapi>=0.3.0       # reverse-engineered Mercari Japan API (async)
-python-dotenv>=1.0   # load DEEPL_API_KEY from .env (used in slice #3)
+python-dotenv>=1.0   # load DEEPL_API_KEY from .env
+deepl>=1.18          # official DeepL API client (slice #3 translator)
+PyYAML>=6.0          # read fashion_glossary.yaml

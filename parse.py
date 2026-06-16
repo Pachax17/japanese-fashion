@@ -19,12 +19,11 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
+from fx import get_mercari_jpy_to_eur
+
 DATA_DIR = Path(__file__).parent / "data"
 IN_PATH = DATA_DIR / "junya_man.json"
 OUT_PATH = DATA_DIR / "junya_man_normalized.json"
-
-# --- FX (placeholder) -------------------------------------------------------
-JPY_TO_EUR = 0.0060  # TODO: replace with a live FX source; rough placeholder rate
 
 # --- Mercari's fixed 6 condition labels -> our normalized scale -------------
 CONDITION_MAP = {
@@ -36,8 +35,14 @@ CONDITION_MAP = {
     "全体的に状態が悪い": "poor",
 }
 
-# --- Footwear exclusion (decision 2026-06-16) -------------------------------
-FOOTWEAR_MARKERS = ("靴", "スニーカー", "シューズ", "ブーツ", "サンダル")
+# --- Clothing whitelist (decision 2026-06-16: clothing only) ----------------
+#   Keep only clothing categories; this drops footwear, bags, dresses, etc.
+#   Matched by substring so category-name variants still pass.
+CLOTHING_MARKERS = (
+    "トップス", "パンツ", "アウター", "ジャケット", "コート", "スーツ",
+    "シャツ", "ニット", "セーター", "デニム", "ベスト", "パーカー",
+    "スウェット", "ズボン", "短パン", "ハーフパンツ", "カーディガン",
+)
 
 # --- Only regular Mercari listings (id = 'm' + 11 digits) -------------------
 #   "Mercari Shops" items use 22-char IDs, fail full_item enrichment, and don't
@@ -52,8 +57,8 @@ SIZE_NUM_RE = re.compile(r"サイズ\s*[:：]?\s*([0-9]{1,2})")
 WAIST_RE = re.compile(r"[WwＷ]\s?([0-9]{2,3})")
 
 
-def is_footwear(category_raw: str | None) -> bool:
-    return bool(category_raw) and any(mark in category_raw for mark in FOOTWEAR_MARKERS)
+def is_clothing(category_raw: str | None) -> bool:
+    return bool(category_raw) and any(mark in category_raw for mark in CLOTHING_MARKERS)
 
 
 def parse_size(*texts: str | None) -> tuple[str | None, str | None]:
@@ -73,7 +78,7 @@ def parse_size(*texts: str | None) -> tuple[str | None, str | None]:
     return None, None
 
 
-def normalize(raw: dict, scraped_at: str) -> dict:
+def normalize(raw: dict, scraped_at: str, fx_rate: float) -> dict:
     sid = raw.get("source_item_id")
     title = raw.get("title_ja")
     desc = raw.get("description_ja")
@@ -97,7 +102,7 @@ def normalize(raw: dict, scraped_at: str) -> dict:
         "condition_raw": cond_raw,
         "condition_norm": CONDITION_MAP.get(cond_raw),
         "price_jpy": price_jpy,
-        "price_eur": round(price_jpy * JPY_TO_EUR) if isinstance(price_jpy, (int, float)) else None,
+        "price_eur": round(price_jpy * fx_rate, 2) if isinstance(price_jpy, (int, float)) else None,
         "images": raw.get("photos") or [],
         "status": raw.get("status"),
         "scraped_at": scraped_at,
@@ -110,29 +115,34 @@ def main() -> None:
     raw_listings = payload.get("listings", [])
     scraped_at = payload.get("scraped_at")
 
-    kept, dropped_footwear, dropped_shops = [], 0, 0
+    fx_rate, fx_source = get_mercari_jpy_to_eur()
+    print(f"[fx] 1 JPY = {fx_rate} EUR (source: {fx_source})")
+
+    kept, dropped_non_clothing, dropped_shops = [], 0, 0
     for raw in raw_listings:
         sid = raw.get("source_item_id") or ""
         if not MERCARI_ID_RE.match(sid):     # Mercari Shops / unknown id -> dead Buyee link
             dropped_shops += 1
             continue
-        if is_footwear(raw.get("category_raw")):
-            dropped_footwear += 1
+        if not is_clothing(raw.get("category_raw")):   # clothing-only whitelist
+            dropped_non_clothing += 1
             continue
-        kept.append(normalize(raw, scraped_at))
+        kept.append(normalize(raw, scraped_at, fx_rate))
 
     out = {
         "normalized_at": datetime.now(timezone.utc).isoformat(),
         "source": "mercari",
         "brand": "junya_watanabe (MAN)",
+        "fx_jpy_eur": fx_rate,
+        "fx_source": fx_source,
         "input_count": len(raw_listings),
         "dropped_shops": dropped_shops,
-        "dropped_footwear": dropped_footwear,
+        "dropped_non_clothing": dropped_non_clothing,
         "count": len(kept),
         "listings": kept,
     }
     OUT_PATH.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"[parse] in={len(raw_listings)} | dropped shops={dropped_shops} | dropped footwear={dropped_footwear} | kept={len(kept)}")
+    print(f"[parse] in={len(raw_listings)} | dropped shops={dropped_shops} | dropped non-clothing={dropped_non_clothing} | kept={len(kept)}")
     print(f"[done] wrote -> {OUT_PATH}")
 
 

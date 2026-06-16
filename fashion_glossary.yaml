@@ -1,0 +1,51 @@
+# (C) Claude-generated — fashion glossary (JA -> EN)
+# Used to pre-substitute brand names + fashion jargon BEFORE machine translation,
+# so DeepL doesn't mangle them. Longest keys are applied first (see translate.py).
+# Grow this as we see real seller data.
+
+brands:
+  ジュンヤワタナベマン: Junya Watanabe MAN
+  ジュンヤワタナベ: Junya Watanabe
+  コムデギャルソンオムプリュス: Comme des Garcons Homme Plus
+  コムデギャルソンオムドゥ: Comme des Garcons Homme Deux
+  コムデギャルソンオム: Comme des Garcons Homme
+  コムデギャルソン: Comme des Garcons
+  ギャルソン: Comme des Garcons
+
+terms:
+  # garments
+  スラックス: slacks
+  パンツ: pants
+  ズボン: trousers
+  ジャケット: jacket
+  アウター: outerwear
+  コート: coat
+  シャツ: shirt
+  Tシャツ: t-shirt
+  ニット: knit
+  セーター: sweater
+  カーディガン: cardigan
+  ベスト: vest
+  パーカー: hoodie
+  スウェット: sweatshirt
+  デニム: denim
+  ライダース: biker jacket
+  セットアップ: suit set
+  # construction / details
+  縮絨: boiled wool
+  開襟: open collar
+  配色: colour-block
+  変形: asymmetric
+  リメイク: reworked
+  パッチワーク: patchwork
+  半袖: short sleeve
+  長袖: long sleeve
+  # fabric / colour
+  ウール: wool
+  ポリ: poly
+  黒: black
+  # meta
+  古着: vintage
+  後期: late period
+  美品: mint condition
+  希少: rare
