@@ -1,4 +1,3 @@
-# (C) Claude-generated — fashion glossary (JA -> EN)
 # Used to pre-substitute brand names + fashion jargon BEFORE machine translation,
 # so DeepL doesn't mangle them. Longest keys are applied first (see translate.py).
 # Grow this as we see real seller data.

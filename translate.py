@@ -1,4 +1,3 @@
-# (C) Claude-generated — Japanese Fashion MVP, build slice #3
 """Translate listing titles JA -> EN.
 
 Strategy (from the vault Translation Test): a Mercari title is structured data +

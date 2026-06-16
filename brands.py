@@ -1,4 +1,3 @@
-# (C) Claude-generated
 """Brand keyword config — mirrors the vault Brand Dictionary v1.
 
 MVP = menswear-only. We target each brand's MEN'S-line keyword so we get menswear

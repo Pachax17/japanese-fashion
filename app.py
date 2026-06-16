@@ -1,4 +1,3 @@
-# (C) Claude-generated — Japanese Fashion MVP, build slices #6-7
 """Flask app: grid + detail page + Buyee redirect.
 
 - "/"            grid, filterable by brand / size / condition (needs_review hidden, active only)

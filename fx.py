@@ -1,4 +1,3 @@
-# (C) Claude-generated — live JPY->EUR exchange rate
 """Fetch a live JPY->EUR rate. Uses Frankfurter (ECB data, free, no API key).
 
 Falls back to a placeholder if the network call fails so the pipeline never breaks.

@@ -1,4 +1,3 @@
-# (C) Claude-generated — Japanese Fashion MVP, build slice #4
 """Brand matcher — assign each listing a brand + confidence (the project's moat).
 
 Why this matters: CdG sub-lines (Homme / Homme Plus / Homme Deux) and Junya all

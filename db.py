@@ -1,4 +1,3 @@
-# (C) Claude-generated — Japanese Fashion MVP, build slice #5
 """Load matched listings into SQLite (the catalog the grid page will read from).
 
 - schema = the listing schema from the vault Data Model spec

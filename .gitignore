@@ -10,8 +10,9 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 
-# Scraped data / outputs
-data/
+# Scraped data / outputs (but keep the matched seed so deploys can rebuild the DB)
+data/*
+!data/listings_matched.json
 
 # OS
 .DS_Store

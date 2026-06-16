@@ -1,4 +1,3 @@
-# (C) Claude-generated — Japanese Fashion MVP, build slice #2
 """Parse + normalize raw scraped listings into the clean listing schema.
 
 Input : data/junya_man.json        (raw, from scrape.py)

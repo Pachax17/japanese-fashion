@@ -1,4 +1,3 @@
-# (C) Claude-generated — Japanese Fashion MVP, build slice #1
 """Scrape Junya Watanabe MAN listings from Mercari and save to data/junya_man.json.
 
 Why Mercari and not Buyee:

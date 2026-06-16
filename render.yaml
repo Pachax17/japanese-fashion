@@ -1,0 +1,9 @@
+# Render.com deploy config. The DB is rebuilt from the committed seed
+# (data/listings_matched.json) at build time, so no SQLite binary in git.
+services:
+  - type: web
+    name: japanese-fashion
+    runtime: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt && python db.py"
+    startCommand: "gunicorn app:app --bind 0.0.0.0:$PORT"
