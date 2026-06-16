@@ -41,13 +41,14 @@ MATCH = {
         "negative": [],
     },
     "cdg_homme_plus": {
-        "strong": ["コムデギャルソンオムプリュス", "COMME des GARCONS HOMME PLUS", "HOMME PLUS", "オムプリュス"],
+        "strong": ["コムデギャルソンオムプリュス", "COMME des GARCONS HOMME PLUS", "HOMME PLUS", "オムプリュス",
+                   "HOMME PULUS"],  # 'PULUS' = common romaji misspelling of PLUS (real data)
         "weak": ["オムプラス", "HOMME+"],
         "negative": ["ジュンヤ", "JUNYA", "オムドゥ", "HOMME DEUX"],
     },
     "cdg_homme": {
         "strong": ["コムデギャルソンオム", "COMME des GARCONS HOMME"],
         "weak": ["ギャルソンオム"],
-        "negative": ["オムプリュス", "HOMME PLUS", "オムドゥ", "HOMME DEUX", "ジュンヤ", "JUNYA"],
+        "negative": ["オムプリュス", "HOMME PLUS", "HOMME PULUS", "オムドゥ", "HOMME DEUX", "ジュンヤ", "JUNYA"],
     },
 }

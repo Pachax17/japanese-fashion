@@ -29,9 +29,9 @@ BUYEE_ITEM_URL = "https://buyee.jp/mercari/item/{item_id}?conversionType=Mercari
 MERCARI_ITEM_URL = "https://jp.mercari.com/item/{item_id}"
 
 # Politeness / scope knobs
-MAX_ITEMS = 200          # hard cap on listings collected per brand (across pages)
-MAX_PAGES = 10           # safety cap on pagination
-REQUEST_DELAY_S = 0.6    # pause between detail requests — be a good citizen
+MAX_ITEMS_PER_BRAND = 100   # hard cap on listings collected per brand (across pages)
+MAX_PAGES = 10              # safety cap on pagination
+REQUEST_DELAY_S = 0.6       # pause between detail requests — be a good citizen
 
 
 def _getattr_any(obj, *names, default=None):
@@ -81,7 +81,7 @@ async def _build_record(item, brand_key: str) -> dict:
 async def scrape_brand(m: Mercapi, brand_key: str) -> list[dict]:
     brand = BRANDS[brand_key]
     keyword = brand["search_keywords"][0]
-    print(f"[search] {brand['display']} -> '{keyword}' (cap {MAX_ITEMS} items / {MAX_PAGES} pages)")
+    print(f"[search] {brand['display']} -> '{keyword}' (cap {MAX_ITEMS_PER_BRAND} items / {MAX_PAGES} pages)")
 
     results = await m.search(keyword)
     listings: list[dict] = []
@@ -90,12 +90,12 @@ async def scrape_brand(m: Mercapi, brand_key: str) -> list[dict]:
         items = getattr(results, "items", []) or []
         print(f"  [page {page}] {len(items)} items (total so far: {len(listings)})")
         for item in items:
-            if len(listings) >= MAX_ITEMS:
+            if len(listings) >= MAX_ITEMS_PER_BRAND:
                 break
             listings.append(await _build_record(item, brand_key))
 
         meta = getattr(results, "meta", None)
-        if (len(listings) >= MAX_ITEMS
+        if (len(listings) >= MAX_ITEMS_PER_BRAND
                 or page >= MAX_PAGES
                 or not meta
                 or not getattr(meta, "next_page_token", None)):
@@ -111,18 +111,26 @@ async def main() -> None:
     DATA_DIR.mkdir(exist_ok=True)
     m = Mercapi()
 
-    listings = await scrape_brand(m, "junya_watanabe")
+    # Scrape every configured brand, deduping across searches (an item can show up
+    # under more than one keyword — e.g. Homme vs Homme Plus).
+    by_id: dict[str, dict] = {}
+    for brand_key in BRANDS:
+        for rec in await scrape_brand(m, brand_key):
+            sid = rec.get("source_item_id")
+            if sid and sid not in by_id:
+                by_id[sid] = rec
 
+    listings = list(by_id.values())
     payload = {
         "scraped_at": datetime.now(timezone.utc).isoformat(),
         "source": "mercari",
-        "brand": "junya_watanabe (MAN)",
+        "brands_searched": list(BRANDS),
         "count": len(listings),
         "listings": listings,
     }
-    out_path = DATA_DIR / "junya_man.json"
+    out_path = DATA_DIR / "listings_raw.json"
     out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"[done] wrote {len(listings)} listings -> {out_path}")
+    print(f"[done] wrote {len(listings)} unique listings -> {out_path}")
 
 
 if __name__ == "__main__":

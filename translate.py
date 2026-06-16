@@ -28,8 +28,8 @@ from dotenv import load_dotenv
 
 HERE = Path(__file__).parent
 DATA_DIR = HERE / "data"
-IN_PATH = DATA_DIR / "junya_man_normalized.json"
-OUT_PATH = DATA_DIR / "junya_man_translated.json"
+IN_PATH = DATA_DIR / "listings_normalized.json"
+OUT_PATH = DATA_DIR / "listings_translated.json"
 GLOSSARY_PATH = HERE / "fashion_glossary.yaml"
 
 load_dotenv(HERE / ".env")

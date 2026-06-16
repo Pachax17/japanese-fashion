@@ -28,9 +28,9 @@ from pathlib import Path
 from brands import MATCH, MATCH_PRIORITY
 
 DATA_DIR = Path(__file__).parent / "data"
-IN_PATH = DATA_DIR / "junya_man_translated.json"
-NORM_PATH = DATA_DIR / "junya_man_normalized.json"  # fallback if not translated yet
-OUT_PATH = DATA_DIR / "junya_man_matched.json"
+IN_PATH = DATA_DIR / "listings_translated.json"
+NORM_PATH = DATA_DIR / "listings_normalized.json"  # fallback if not translated yet
+OUT_PATH = DATA_DIR / "listings_matched.json"
 
 CONFIDENCE_THRESHOLD = 0.6
 STRONG_CONF = 0.95

@@ -22,8 +22,8 @@ from pathlib import Path
 from fx import get_mercari_jpy_to_eur
 
 DATA_DIR = Path(__file__).parent / "data"
-IN_PATH = DATA_DIR / "junya_man.json"
-OUT_PATH = DATA_DIR / "junya_man_normalized.json"
+IN_PATH = DATA_DIR / "listings_raw.json"
+OUT_PATH = DATA_DIR / "listings_normalized.json"
 
 # --- Mercari's fixed 6 condition labels -> our normalized scale -------------
 CONDITION_MAP = {
@@ -132,7 +132,6 @@ def main() -> None:
     out = {
         "normalized_at": datetime.now(timezone.utc).isoformat(),
         "source": "mercari",
-        "brand": "junya_watanabe (MAN)",
         "fx_jpy_eur": fx_rate,
         "fx_source": fx_source,
         "input_count": len(raw_listings),
