@@ -1,0 +1,17 @@
+# Secrets — NEVER commit
+.env
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+
+# Scraped data / outputs
+data/
+
+# OS
+.DS_Store

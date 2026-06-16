@@ -1,0 +1,3 @@
+# (C) Claude-generated
+mercapi>=0.3.0       # reverse-engineered Mercari Japan API (async)
+python-dotenv>=1.0   # load DEEPL_API_KEY from .env (used in slice #3)
