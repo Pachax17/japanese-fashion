@@ -1,0 +1,76 @@
+<!-- (C) Claude-generated — listing detail page with photo gallery -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ it.title_en or it.title_ja }} — Archive</title>
+  <style>
+    :root { --ink:#111; --muted:#888; --line:#ececec; --bg:#fff; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; color:var(--ink); background:var(--bg); -webkit-font-smoothing:antialiased; }
+    a { color:inherit; }
+    .top { padding:20px 24px; border-bottom:1px solid var(--line); }
+    .back { font-size:13px; color:var(--muted); text-decoration:none; }
+    .wrap { display:grid; grid-template-columns:1.1fr .9fr; gap:40px; max-width:1080px; margin:0 auto; padding:32px 24px; }
+    @media (max-width:760px){ .wrap{ grid-template-columns:1fr; gap:24px; } }
+    .main-img { width:100%; aspect-ratio:3/4; object-fit:cover; background:#f4f4f4; border-radius:6px; }
+    .thumbs { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+    .thumbs img { width:64px; height:80px; object-fit:cover; border-radius:4px; cursor:pointer; opacity:.6; border:1px solid var(--line); }
+    .thumbs img.active, .thumbs img:hover { opacity:1; }
+    .brand { font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+    h1 { font-size:20px; font-weight:600; line-height:1.35; margin:8px 0 16px; }
+    .price { font-size:24px; font-weight:700; }
+    .price .jpy { font-size:14px; color:var(--muted); font-weight:400; margin-left:8px; }
+    .specs { margin:22px 0; border-top:1px solid var(--line); }
+    .specs div { display:flex; justify-content:space-between; padding:11px 0; border-bottom:1px solid var(--line); font-size:14px; }
+    .specs .k { color:var(--muted); }
+    .buy { display:block; text-align:center; text-decoration:none; background:var(--ink); color:#fff; padding:15px; border-radius:6px; font-size:14px; margin-top:8px; }
+    .buy:hover { opacity:.85; }
+    .note { font-size:12px; color:var(--muted); margin-top:10px; text-align:center; }
+    .ja { font-size:12px; color:var(--muted); margin-top:18px; line-height:1.5; }
+  </style>
+</head>
+<body>
+  <div class="top"><a class="back" href="javascript:history.back()">← Back</a></div>
+  <div class="wrap">
+    <div>
+      {% if it.images_list %}
+        <img class="main-img" id="main" src="{{ it.images_list[0] }}" alt="">
+        {% if it.images_list|length > 1 %}
+        <div class="thumbs">
+          {% for img in it.images_list %}
+            <img src="{{ img }}" class="{{ 'active' if loop.first }}" onclick="document.getElementById('main').src=this.src;
+                 document.querySelectorAll('.thumbs img').forEach(t=>t.classList.remove('active')); this.classList.add('active');">
+          {% endfor %}
+        </div>
+        {% endif %}
+      {% else %}
+        <div class="main-img"></div>
+      {% endif %}
+    </div>
+
+    <div>
+      <div class="brand">{{ it.brand_display }}</div>
+      <h1>{{ it.title_en or it.title_ja }}</h1>
+      <div class="price">€{{ '%.2f'|format(it.price_eur) if it.price_eur else '—' }}
+        <span class="jpy">¥{{ '{:,}'.format(it.price_jpy) if it.price_jpy else '' }}</span>
+      </div>
+
+      <div class="specs">
+        <div><span class="k">Brand</span><span>{{ it.brand_display }}</span></div>
+        <div><span class="k">Size</span><span>{{ it.size_norm or it.size_raw or '—' }}</span></div>
+        <div><span class="k">Condition</span><span>{{ it.condition_label or '—' }}</span></div>
+        <div><span class="k">Status</span><span>{{ 'Available' if it.status == 'active' else 'Sold' }}</span></div>
+      </div>
+
+      <a class="buy" href="/go/{{ it.id }}" target="_blank" rel="noopener">View on Buyee →</a>
+      <div class="note">You buy on Buyee — we just reorganise the listings.</div>
+
+      {% if it.title_ja and it.title_ja != it.title_en %}
+        <div class="ja">Original title: {{ it.title_ja }}</div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>
