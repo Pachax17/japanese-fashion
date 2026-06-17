@@ -30,6 +30,9 @@ DATA_DIR = HERE / "data"
 IN_PATH = DATA_DIR / "listings_normalized.json"
 OUT_PATH = DATA_DIR / "listings_translated.json"
 GLOSSARY_PATH = HERE / "fashion_glossary.yaml"
+# The committed seed from the previous run; reused as a translation cache so the
+# daily refresh only spends DeepL quota on *new* listings.
+CACHE_PATH = DATA_DIR / "listings_matched.json"
 
 load_dotenv(HERE / ".env")
 DEEPL_API_KEY = os.getenv("DEEPL_API_KEY")
@@ -53,6 +56,21 @@ def load_glossary() -> dict[str, str]:
     return dict(sorted(entries.items(), key=lambda kv: len(kv[0]), reverse=True))
 
 
+def load_translation_cache() -> dict[str, str]:
+    """Map source_item_id -> title_en from the previous run's seed (incremental refresh)."""
+    if not CACHE_PATH.exists():
+        return {}
+    try:
+        prev = json.loads(CACHE_PATH.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        return {}
+    return {
+        x["source_item_id"]: x["title_en"]
+        for x in prev.get("listings", [])
+        if x.get("source_item_id") and x.get("title_en")
+    }
+
+
 def preprocess(title: str, glossary: dict[str, str]) -> str:
     if not title:
         return ""
@@ -70,19 +88,27 @@ def main() -> None:
     ap.add_argument("--limit", type=int, default=None, help="translate only the first N (saves quota while testing)")
     args = ap.parse_args()
 
-    if not DEEPL_API_KEY:
-        sys.exit("ERROR: DEEPL_API_KEY missing. Copy .env.example -> .env and add your key.")
-
     glossary = load_glossary()
-    translator = deepl.Translator(DEEPL_API_KEY)
+    cache = load_translation_cache()
+    translator = None  # lazy init: only needed if there are new (uncached) titles
 
     payload = json.loads(IN_PATH.read_text(encoding="utf-8"))
     listings = payload.get("listings", [])
     todo = listings if args.limit is None else listings[: args.limit]
-    print(f"[translate] {len(todo)} titles via DeepL (glossary terms: {len(glossary)})")
+    print(f"[translate] {len(todo)} titles (glossary: {len(glossary)}, cached: {len(cache)})")
 
-    ok = 0
+    ok = reused = 0
     for x in todo:
+        sid = x.get("source_item_id")
+        if sid in cache:                 # already translated in a previous run -> reuse
+            x["title_en"] = cache[sid]
+            reused += 1
+            continue
+        if translator is None:           # first new title -> we actually need DeepL
+            if not DEEPL_API_KEY:
+                sys.exit("ERROR: new listings need translation but DEEPL_API_KEY is missing. "
+                         "Add it to .env (local) or repo secrets (CI).")
+            translator = deepl.Translator(DEEPL_API_KEY)
         cleaned = preprocess(x.get("title_ja") or "", glossary)
         try:
             res = translator.translate_text(cleaned, source_lang="JA", target_lang="EN-US")
@@ -97,8 +123,15 @@ def main() -> None:
     ).isoformat()
     OUT_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    usage = translator.get_usage()
-    print(f"[translate] translated {ok}/{len(todo)} | DeepL usage: {usage.character.count}/{usage.character.limit} chars")
+    if translator is not None:
+        try:
+            usage = translator.get_usage()
+            print(f"[translate] new={ok} reused={reused} of {len(todo)} | "
+                  f"DeepL usage: {usage.character.count}/{usage.character.limit} chars")
+        except Exception as e:  # noqa: BLE001
+            print(f"[translate] new={ok} reused={reused} of {len(todo)} | usage unavailable: {e}")
+    else:
+        print(f"[translate] new=0 reused={reused} of {len(todo)} | DeepL not called (all cached)")
     print(f"[done] wrote -> {OUT_PATH}")
 
 

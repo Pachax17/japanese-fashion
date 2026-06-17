@@ -1,0 +1,64 @@
+name: Daily catalog refresh
+
+# Re-scrapes Mercari, re-runs the pipeline, and commits the new seed
+# (data/listings_matched.json). The push triggers Render to redeploy.
+on:
+  schedule:
+    - cron: "0 3 * * *"   # 03:00 UTC every day
+  workflow_dispatch: {}    # ...and a manual "Run workflow" button
+
+permissions:
+  contents: write          # allow the job to push the refreshed seed
+
+concurrency:               # never run two refreshes at once
+  group: daily-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run pipeline (scrape -> parse -> translate -> match)
+        env:
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+        run: |
+          python scrape.py
+          python parse.py
+          python translate.py
+          python match.py
+
+      - name: Safety check — refuse to wipe the catalog
+        # If Mercari blocked the cloud IP, scrape returns ~0 items. Don't commit
+        # an empty catalog (that would blank the live site). Fail instead.
+        run: |
+          python - <<'PY'
+          import json, sys
+          d = json.load(open("data/listings_matched.json", encoding="utf-8"))
+          n = d.get("count", 0)
+          print("matched listings:", n)
+          if n < 50:
+              sys.exit(f"Refusing to commit: only {n} listings (scrape likely blocked).")
+          PY
+
+      - name: Commit & push if the seed changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/listings_matched.json
+          if git diff --cached --quiet; then
+            echo "No catalog changes — nothing to commit."
+          else
+            git commit -m "chore: daily catalog refresh"
+            git push
+          fi
