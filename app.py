@@ -3,19 +3,27 @@
 - "/"            grid, filterable by brand / size / condition (needs_review hidden, active only)
 - "/item/<id>"  detail page with photo gallery
 - "/go/<id>"    log the click, then 302 to the listing's Buyee page
-                (raw Buyee URL for now; affiliate deep-link is Track 2)
+                (wrapped as a Skimlinks affiliate deep-link when SKIMLINKS_ID is set)
 
 Run:  pip install -r requirements.txt ; python app.py  -> http://127.0.0.1:5000
 """
 
 import json
+import os
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import quote
 
+from dotenv import load_dotenv
 from flask import Flask, abort, redirect, render_template, request
 
+load_dotenv(Path(__file__).parent / ".env")
 DB_PATH = Path(__file__).parent / "data" / "listings.db"
+
+# Skimlinks affiliate site id (e.g. "304859X1793048"). Unset -> raw Buyee links
+# (so it stays inert until the account is approved and the env var is set).
+SKIMLINKS_ID = os.getenv("SKIMLINKS_ID")
 
 app = Flask(__name__)
 
@@ -31,6 +39,17 @@ CONDITION_ORDER = ["new", "like_new", "good", "fair", "poor"]
 SIZE_ORDER = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"]
 SHOWN_BRANDS = tuple(DISPLAY.keys())
 _PH = ",".join("?" * len(SHOWN_BRANDS))
+
+
+def affiliate_url(buyee_url: str, listing_id: str) -> str:
+    """Wrap the Buyee URL as a Skimlinks deep-link (with per-listing xcust tracking).
+    If SKIMLINKS_ID is unset, return the raw Buyee URL unchanged."""
+    if not SKIMLINKS_ID:
+        return buyee_url
+    return (
+        f"https://go.skimresources.com/?id={SKIMLINKS_ID}&xs=1"
+        f"&url={quote(buyee_url, safe='')}&xcust={listing_id}"
+    )
 
 
 def _conn() -> sqlite3.Connection:
@@ -137,8 +156,7 @@ def go(id):
     )
     conn.commit()
     conn.close()
-    # Track 2 will swap this raw URL for the Skimlinks affiliate deep-link.
-    return redirect(row["buyee_item_url"], code=302)
+    return redirect(affiliate_url(row["buyee_item_url"], id), code=302)
 
 
 if __name__ == "__main__":
