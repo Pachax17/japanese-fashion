@@ -5,7 +5,7 @@ otherwise buried in Mercari Japan's dense, Japanese-only UI. Listings are scrape
 classified by brand, and re-displayed as a clean Vinted/VestiaireCo style grid. You don't buy
 here. When you find a piece, you're redirected to its **Buyee** page to purchase.
 
-**Brands (menswear):** Junya Watanabe MAN · Comme des Garçons Homme Plus · Comme des Garçons Homme
+**Brands:** Junya Watanabe MAN · Comme des Garçons Homme / Homme Plus · Undercover · Number (Nine) · LGB (Le Grand Bleu) · Tornado Mart · Pleats Please Issey Miyake
 
 ---
 
@@ -67,8 +67,9 @@ To refresh the catalog: re-run the pipeline locally and commit the new `data/lis
 ---
 
 ## Status
-MVP complete: browse → filter → detail/photos → redirect to Buyee.
-**Next:** affiliate links (Buyee via Skimlinks) on the redirect; finer filters; more brands.
+MVP complete and live: browse → filter → detail/photos → redirect to Buyee, across 8 brands,
+refreshed daily via GitHub Actions.
+**Next:** more sources (e.g. Yahoo Auctions), finer filters (price range, saved searches), alerts.
 
 ## Disclaimer
 Not affiliated with Mercari or Buyee. This is a browsing aid that reorganises public listings and

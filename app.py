@@ -31,6 +31,11 @@ DISPLAY = {
     "junya_watanabe": "Junya Watanabe MAN",
     "cdg_homme_plus": "Comme des Garçons Homme Plus",
     "cdg_homme": "Comme des Garçons Homme",
+    "undercover": "Undercover",
+    "number_nine": "Number (Nine)",
+    "lgb": "LGB (Le Grand Bleu)",
+    "tornado_mart": "Tornado Mart",
+    "pleats_please": "Pleats Please Issey Miyake",
 }
 CONDITION_LABEL = {
     "new": "New", "like_new": "Like new", "good": "Good", "fair": "Fair", "poor": "Poor",

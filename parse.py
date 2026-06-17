@@ -41,6 +41,7 @@ CLOTHING_MARKERS = (
     "トップス", "パンツ", "アウター", "ジャケット", "コート", "スーツ",
     "シャツ", "ニット", "セーター", "デニム", "ベスト", "パーカー",
     "スウェット", "ズボン", "短パン", "ハーフパンツ", "カーディガン",
+    "スカート", "ワンピース",  # womenswear clothing (e.g. Pleats Please)
 )
 
 # --- Only regular Mercari listings (id = 'm' + 11 digits) -------------------
