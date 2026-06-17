@@ -30,6 +30,12 @@
     .btn { margin-top:10px; display:block; text-align:center; text-decoration:none; font-size:12px; padding:9px; border:1px solid var(--ink); border-radius:4px; }
     .btn:hover { background:var(--ink); color:#fff; }
     footer { color:var(--muted); font-size:12px; text-align:center; padding:24px; }
+    .waitlist { display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:center;
+                padding:12px 24px; background:#fafafa; border-bottom:1px solid var(--line); font-size:13px; }
+    .waitlist span { color:var(--muted); }
+    .waitlist input { font-size:13px; padding:8px 12px; border:1px solid var(--line); border-radius:999px; min-width:200px; }
+    .waitlist button { font-size:13px; padding:8px 16px; border:1px solid var(--ink); background:var(--ink);
+                       color:#fff; border-radius:999px; cursor:pointer; }
   </style>
 </head>
 <body>
@@ -37,6 +43,14 @@
     <h1>Archive</h1>
     <div class="sub">Archive Japanese designer pieces · {{ items|length }} / {{ total }} pieces · redirects to Buyee</div>
   </header>
+
+  {% if waitlist_action %}
+  <form class="waitlist" action="{{ waitlist_action }}" method="POST">
+    <span>New archive pieces drop daily — get notified:</span>
+    <input type="email" name="email" placeholder="your@email.com" required>
+    <button type="submit">Notify me</button>
+  </form>
+  {% endif %}
 
   <form class="bar" method="get" id="filters">
     <select name="brand" onchange="this.form.submit()">

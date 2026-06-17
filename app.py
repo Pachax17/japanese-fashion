@@ -25,6 +25,11 @@ DB_PATH = Path(__file__).parent / "data" / "listings.db"
 # (so it stays inert until the account is approved and the env var is set).
 SKIMLINKS_ID = os.getenv("SKIMLINKS_ID")
 
+# Hosted form endpoint for the email waitlist (e.g. a Formspree URL
+# "https://formspree.io/f/xxxx"). Unset -> the signup bar is hidden.
+# Emails live with the form provider, NOT in the ephemeral SQLite.
+WAITLIST_ACTION = os.getenv("WAITLIST_ACTION")
+
 app = Flask(__name__)
 
 DISPLAY = {
@@ -135,6 +140,7 @@ def index():
         active_brand=brand if brand in DISPLAY else None,
         active_size=size,
         active_condition=condition,
+        waitlist_action=WAITLIST_ACTION,
     )
 
 
