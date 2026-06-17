@@ -30,7 +30,17 @@ SKIMLINKS_ID = os.getenv("SKIMLINKS_ID")
 # Emails live with the form provider, NOT in the ephemeral SQLite.
 WAITLIST_ACTION = os.getenv("WAITLIST_ACTION")
 
+# Cloudflare Web Analytics token (free, privacy-friendly). Unset -> no tracking.
+ANALYTICS_TOKEN = os.getenv("CF_ANALYTICS_TOKEN")
+
 app = Flask(__name__)
+
+
+@app.context_processor
+def inject_globals():
+    # makes {{ analytics_token }} available to every template
+    return {"analytics_token": ANALYTICS_TOKEN}
+
 
 DISPLAY = {
     "junya_watanabe": "Junya Watanabe MAN",
