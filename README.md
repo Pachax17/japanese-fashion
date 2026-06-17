@@ -1,4 +1,4 @@
-# Archive — Japanese designer menswear, reorganised
+# Mekke (見っけ) — archive Japanese designer, found & reorganised
 
 A minimalist, Western friendly way to browse **archive Japanese designer menswear** that's
 otherwise buried in Mercari Japan's dense, Japanese-only UI. Listings are scraped, translated,
