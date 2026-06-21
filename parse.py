@@ -92,6 +92,7 @@ def normalize(raw: dict, scraped_at: str, fx_rate: float) -> dict:
         "source_item_id": sid,
         "mercari_url": raw.get("mercari_url"),
         "buyee_item_url": raw.get("buyee_item_url"),
+        "listed_at": raw.get("listed_at"),       # Mercari listing date (for sort-by-new)
         "title_ja": title,
         "title_en": None,                       # slice #3 (translation)
         "brand": raw.get("brand_guess"),        # provisional; slice #4 (matching) refines this

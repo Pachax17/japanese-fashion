@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS listings (
     images           TEXT,          -- JSON array
     mercari_url      TEXT,
     buyee_item_url   TEXT,
+    listed_at        TEXT,          -- Mercari listing date (ISO) for sort-by-new
     status           TEXT,          -- active / sold
     scraped_at       TEXT,
     first_seen_at    TEXT,
@@ -45,18 +46,19 @@ CREATE TABLE IF NOT EXISTS listings (
 );
 CREATE INDEX IF NOT EXISTS idx_listings_brand  ON listings(brand);
 CREATE INDEX IF NOT EXISTS idx_listings_status ON listings(status);
+CREATE INDEX IF NOT EXISTS idx_listings_listed ON listings(listed_at);
 """
 
 UPSERT = """
 INSERT INTO listings (
     id, source, source_item_id, title_ja, title_en, brand, brand_confidence,
     category_raw, size_raw, size_norm, condition_raw, condition_norm,
-    price_jpy, price_eur, images, mercari_url, buyee_item_url, status,
+    price_jpy, price_eur, images, mercari_url, buyee_item_url, listed_at, status,
     scraped_at, first_seen_at, last_seen_at
 ) VALUES (
     :id, :source, :source_item_id, :title_ja, :title_en, :brand, :brand_confidence,
     :category_raw, :size_raw, :size_norm, :condition_raw, :condition_norm,
-    :price_jpy, :price_eur, :images, :mercari_url, :buyee_item_url, :status,
+    :price_jpy, :price_eur, :images, :mercari_url, :buyee_item_url, :listed_at, :status,
     :scraped_at, :now, :now
 )
 ON CONFLICT(id) DO UPDATE SET
@@ -67,6 +69,7 @@ ON CONFLICT(id) DO UPDATE SET
     condition_norm=excluded.condition_norm, price_jpy=excluded.price_jpy,
     price_eur=excluded.price_eur, images=excluded.images,
     mercari_url=excluded.mercari_url, buyee_item_url=excluded.buyee_item_url,
+    listed_at=excluded.listed_at,
     status=excluded.status, scraped_at=excluded.scraped_at,
     last_seen_at=excluded.last_seen_at
 ;
@@ -96,6 +99,7 @@ def to_row(x: dict, now: str) -> dict:
         "images": json.dumps(x.get("images") or [], ensure_ascii=False),
         "mercari_url": x.get("mercari_url"),
         "buyee_item_url": x.get("buyee_item_url"),
+        "listed_at": x.get("listed_at"),
         "status": map_status(x.get("status")),
         "scraped_at": x.get("scraped_at"),
         "now": now,

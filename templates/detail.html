@@ -26,6 +26,8 @@
     .specs .k { color:var(--muted); }
     .buy { display:block; text-align:center; text-decoration:none; background:var(--ink); color:#fff; padding:15px; border-radius:6px; font-size:14px; margin-top:8px; }
     .buy:hover { opacity:.85; }
+    .buy-alt { display:block; text-align:center; text-decoration:none; color:var(--muted); font-size:13px; margin-top:10px; }
+    .buy-alt:hover { color:var(--ink); }
     .note { font-size:12px; color:var(--muted); margin-top:10px; text-align:center; }
     .ja { font-size:12px; color:var(--muted); margin-top:18px; line-height:1.5; }
   </style>
@@ -63,8 +65,9 @@
         <div><span class="k">Status</span><span>{{ 'Available' if it.status == 'active' else 'Sold' }}</span></div>
       </div>
 
-      <a class="buy" href="/go/{{ it.id }}" target="_blank" rel="noopener">View on Buyee →</a>
-      <div class="note">You buy on Buyee — I just reorganise the listings.</div>
+      <a class="buy" href="/go/{{ it.id }}" target="_blank" rel="noopener">View on Mercari →</a>
+      <a class="buy-alt" href="/go/{{ it.id }}?to=buyee" target="_blank" rel="noopener">or buy via Buyee (proxy) →</a>
+      <div class="note">Buy on Mercari with your own proxy, or via Buyee — I just reorganise the listings.</div>
 
       {% if it.title_ja and it.title_ja != it.title_en %}
         <div class="ja">Original title: {{ it.title_ja }}</div>

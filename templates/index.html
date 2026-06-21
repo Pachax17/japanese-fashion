@@ -13,8 +13,9 @@
     h1 { font-size:18px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; margin:0; }
     .sub { color:var(--muted); font-size:13px; margin-top:6px; }
     .bar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; padding:16px 24px; position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--line); z-index:10; }
-    .bar select { font-size:13px; padding:8px 12px; border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--ink); }
-    .bar .clear { font-size:13px; color:var(--muted); text-decoration:none; }
+    .bar select, .bar input { font-size:13px; padding:8px 12px; border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--ink); }
+    .bar input[type=number] { width:90px; }
+    .bar .clear { font-size:13px; color:var(--muted); text-decoration:none; align-self:center; }
     .grid { display:grid; gap:22px 18px; padding:24px; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); }
     .card { display:flex; flex-direction:column; }
     .card a.lnk { text-decoration:none; display:flex; flex-direction:column; }
@@ -46,13 +47,18 @@
 
   {% if waitlist_action %}
   <form class="waitlist" action="{{ waitlist_action }}" method="POST">
-    <span>New archive pieces drop daily — get notified:</span>
+    <span>New archive pieces drop daily - get notified:</span>
     <input type="email" name="email" placeholder="your@email.com" required>
     <button type="submit">Notify me</button>
   </form>
   {% endif %}
 
   <form class="bar" method="get" id="filters">
+    <select name="sort" onchange="this.form.submit()">
+      <option value="new" {{ 'selected' if active_sort == 'new' }}>Newest first</option>
+      <option value="price_desc" {{ 'selected' if active_sort == 'price_desc' }}>Price: high → low</option>
+      <option value="price_asc" {{ 'selected' if active_sort == 'price_asc' }}>Price: low → high</option>
+    </select>
     <select name="brand" onchange="this.form.submit()">
       <option value="">All brands ({{ total }})</option>
       {% for key, name in display.items() %}
@@ -71,7 +77,9 @@
         <option value="{{ c }}" {{ 'selected' if active_condition == c }}>{{ label }}</option>
       {% endfor %}
     </select>
-    {% if active_brand or active_size or active_condition %}<a class="clear" href="/">Clear</a>{% endif %}
+    <input type="number" name="price_min" min="0" placeholder="€ min" value="{{ price_min if price_min is not none else '' }}" onchange="this.form.submit()">
+    <input type="number" name="price_max" min="0" placeholder="€ max" value="{{ price_max if price_max is not none else '' }}" onchange="this.form.submit()">
+    {% if active_brand or active_size or active_condition or price_min is not none or price_max is not none or active_sort != 'new' %}<a class="clear" href="/">Clear</a>{% endif %}
   </form>
 
   <div class="grid">
@@ -89,14 +97,14 @@
             <span class="jpy">¥{{ '{:,}'.format(it.price_jpy) if it.price_jpy else '' }}</span>
           </div>
         </a>
-        <a class="btn" href="/go/{{ it.id }}" target="_blank" rel="noopener">View on Buyee →</a>
+        <a class="btn" href="/go/{{ it.id }}" target="_blank" rel="noopener">View on Mercari →</a>
       </article>
     {% else %}
       <p>No listings match these filters.</p>
     {% endfor %}
   </div>
 
-  <footer>Browsing reorganised Buyee listings · we don't sell, we redirect.</footer>
+  <footer>Reorganised Mercari Japan listings · I don't sell, I redirect.</footer>
   {% if analytics_token %}<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "{{ analytics_token }}"}'></script>{% endif %}
 </body>
 </html>

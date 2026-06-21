@@ -118,6 +118,14 @@ def main() -> None:
             x["title_en"] = None
             print(f"  [warn] translate failed for {x.get('id')}: {e}")
 
+    # Safety: if we needed to translate new items but EVERY one failed, the key is
+    # bad / quota is exhausted. Abort (non-zero) so CI doesn't ship a null catalog
+    # and poison the cache for future runs.
+    attempted = len(todo) - reused
+    if attempted > 0 and ok == 0:
+        sys.exit(f"ERROR: all {attempted} new translations failed (bad DEEPL_API_KEY or "
+                 "quota?). Aborting so we don't publish an untranslated catalog.")
+
     payload["translated_at"] = __import__("datetime").datetime.now(
         __import__("datetime").timezone.utc
     ).isoformat()

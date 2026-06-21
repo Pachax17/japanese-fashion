@@ -45,6 +45,7 @@ def _getattr_any(obj, *names, default=None):
 async def _build_record(item, brand_key: str) -> dict:
     """Build one listing record, enriched with full details (condition / category / photos)."""
     item_id = _getattr_any(item, "id_", "id")
+    created = _getattr_any(item, "created")  # datetime — when the item was first listed
     record = {
         "source": "mercari",
         "source_item_id": item_id,
@@ -52,6 +53,7 @@ async def _build_record(item, brand_key: str) -> dict:
         "title_ja": _getattr_any(item, "name"),
         "price_jpy": _getattr_any(item, "price"),
         "status": _getattr_any(item, "status"),
+        "listed_at": created.isoformat() if created else None,  # for "sort by new"
         "mercari_url": MERCARI_ITEM_URL.format(item_id=item_id) if item_id else None,
         "buyee_item_url": BUYEE_ITEM_URL.format(item_id=item_id) if item_id else None,
         "condition_raw": None,

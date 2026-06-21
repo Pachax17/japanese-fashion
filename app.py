@@ -91,7 +91,15 @@ def _decorate(row: sqlite3.Row) -> dict:
     return d
 
 
-def query_listings(brand=None, size=None, condition=None) -> list[dict]:
+SORTS = {
+    "new": "ORDER BY COALESCE(listed_at, scraped_at) DESC",   # default — freshest first
+    "price_desc": "ORDER BY price_eur DESC",
+    "price_asc": "ORDER BY price_eur ASC",
+}
+
+
+def query_listings(brand=None, size=None, condition=None,
+                   sort="new", price_min=None, price_max=None) -> list[dict]:
     sql = f"SELECT * FROM listings WHERE status='active' AND brand IN ({_PH})"
     params = list(SHOWN_BRANDS)
     if brand in DISPLAY:
@@ -100,7 +108,11 @@ def query_listings(brand=None, size=None, condition=None) -> list[dict]:
         sql += " AND size_norm = ?"; params.append(size)
     if condition:
         sql += " AND condition_norm = ?"; params.append(condition)
-    sql += " ORDER BY price_eur DESC"
+    if price_min is not None:
+        sql += " AND price_eur >= ?"; params.append(price_min)
+    if price_max is not None:
+        sql += " AND price_eur <= ?"; params.append(price_max)
+    sql += " " + SORTS.get(sort, SORTS["new"])
     conn = _conn()
     rows = conn.execute(sql, params).fetchall()
     conn.close()
@@ -134,12 +146,24 @@ def filter_options() -> dict[str, list[str]]:
     return {"sizes": sizes, "conditions": [(c, CONDITION_LABEL.get(c, c)) for c in conds]}
 
 
+def _to_int(v):
+    try:
+        return int(v)
+    except (TypeError, ValueError):
+        return None
+
+
 @app.route("/")
 def index():
     brand = request.args.get("brand") or None
     size = request.args.get("size") or None
     condition = request.args.get("condition") or None
-    items = query_listings(brand, size, condition)
+    sort = request.args.get("sort") or "new"
+    if sort not in SORTS:
+        sort = "new"
+    price_min = _to_int(request.args.get("price_min"))
+    price_max = _to_int(request.args.get("price_max"))
+    items = query_listings(brand, size, condition, sort, price_min, price_max)
     return render_template(
         "index.html",
         items=items,
@@ -150,6 +174,9 @@ def index():
         active_brand=brand if brand in DISPLAY else None,
         active_size=size,
         active_condition=condition,
+        active_sort=sort,
+        price_min=price_min,
+        price_max=price_max,
         waitlist_action=WAITLIST_ACTION,
     )
 
@@ -166,9 +193,21 @@ def item(id):
 
 @app.route("/go/<id>")
 def go(id):
+    # Default: redirect to Mercari (user feedback — lets buyers pick their own proxy).
+    # ?to=buyee keeps the proxy option (and the affiliate hook, if ever revived).
+    dest = request.args.get("to", "mercari")
     conn = _conn()
-    row = conn.execute("SELECT brand, buyee_item_url FROM listings WHERE id = ?", (id,)).fetchone()
-    if not row or not row["buyee_item_url"]:
+    row = conn.execute(
+        "SELECT brand, mercari_url, buyee_item_url FROM listings WHERE id = ?", (id,)
+    ).fetchone()
+    if not row:
+        conn.close()
+        abort(404)
+    if dest == "buyee" and row["buyee_item_url"]:
+        url = affiliate_url(row["buyee_item_url"], id)
+    else:
+        url = row["mercari_url"]
+    if not url:
         conn.close()
         abort(404)
     conn.execute(
@@ -177,7 +216,7 @@ def go(id):
     )
     conn.commit()
     conn.close()
-    return redirect(affiliate_url(row["buyee_item_url"], id), code=302)
+    return redirect(url, code=302)
 
 
 if __name__ == "__main__":
