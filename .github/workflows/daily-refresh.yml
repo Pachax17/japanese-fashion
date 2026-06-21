@@ -60,5 +60,12 @@ jobs:
             echo "No catalog changes — nothing to commit."
           else
             git commit -m "chore: daily catalog refresh"
-            git push
+            # The remote may have advanced since checkout (a manual push, etc.).
+            # Integrate it first; the seed is the only file we touch, so on the
+            # (rare) conflict favour our freshly-generated version. NB: in a rebase
+            # "theirs" = the commits being replayed (ours), so -X theirs keeps ours.
+            for attempt in 1 2 3; do
+              git pull --rebase -X theirs origin main && git push && break
+              echo "push attempt $attempt failed, retrying..."; sleep 5
+            done
           fi
