@@ -82,12 +82,36 @@ def _conn() -> sqlite3.Connection:
     return conn
 
 
+def age_bucket(listed_at_iso: str | None) -> tuple[str, bool]:
+    """Return (readable age, is_new) where is_new = True if <1 day old."""
+    if not listed_at_iso:
+        return ("unknown", False)
+    try:
+        from datetime import timedelta
+        listed = datetime.fromisoformat(listed_at_iso.replace('Z', '+00:00'))
+        now = datetime.now(timezone.utc)
+        age = now - listed
+        if age < timedelta(days=1):
+            return ("< 1 day ago", True)
+        elif age < timedelta(days=7):
+            return ("< 1 week ago", False)
+        elif age < timedelta(days=30):
+            return ("< 1 month ago", False)
+        elif age.days < 365:
+            return ("this year", False)
+        else:
+            return ("older", False)
+    except Exception:
+        return ("unknown", False)
+
+
 def _decorate(row: sqlite3.Row) -> dict:
     d = dict(row)
     d["images_list"] = json.loads(d.get("images") or "[]")
     d["image"] = d["images_list"][0] if d["images_list"] else None
     d["brand_display"] = DISPLAY.get(d["brand"], d["brand"])
     d["condition_label"] = CONDITION_LABEL.get(d["condition_norm"], d["condition_norm"] or "")
+    d["age_label"], d["is_new"] = age_bucket(d.get("listed_at"))
     return d
 
 

@@ -62,6 +62,7 @@
         <div><span class="k">Brand</span><span>{{ it.brand_display }}</span></div>
         <div><span class="k">Size</span><span>{{ it.size_norm or it.size_raw or '—' }}</span></div>
         <div><span class="k">Condition</span><span>{{ it.condition_label or '—' }}</span></div>
+        <div><span class="k">Listed</span><span>{{ it.age_label }}</span></div>
         <div><span class="k">Status</span><span>{{ 'Available' if it.status == 'active' else 'Sold' }}</span></div>
       </div>
 
