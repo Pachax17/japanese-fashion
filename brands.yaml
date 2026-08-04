@@ -91,8 +91,8 @@ brands:
     exclude: []
     match:
       strong: ["ルグランブルー", "Le Grand Bleu"]
-      # NOT using bare "LGB" (would match 'lgbt' etc.) — word-boundary regex support lands next commit
-      weak: ["エルジービー"]
+      # bare 'lgb' as substring would catch 'lgbt' — word-boundary regex instead:
+      weak: ["エルジービー", "re:\\blgb\\b"]
       negative: []
     mercari_brand_names: ["LGB"]
     mercari_brand_ids: [4371]

@@ -350,5 +350,33 @@
  {
   "title": "90s レア コムデギャルソンMサイズ ショールカラー タキシードベスト ジレ黒",
   "expected": "needs_review"
+ },
+ {
+  "title": "LGB ROCK N ROLL FANTASY 長袖カットソー",
+  "expected": "lgb",
+  "_why": "vrai item LGB, titre sans nom complet — récupéré par re:\\blgb\\b"
+ },
+ {
+  "title": "LGBT プライド Tシャツ レインボー",
+  "expected": "needs_review",
+  "_why": "garde-fou : lgbt ne doit PAS matcher lgb"
+ },
+ {
+  "title": "希少 デニムジャケット 古着",
+  "mercari_brand": "JUNYA WATANABE MAN",
+  "expected": "junya_watanabe",
+  "_why": "titre muet, tag structuré vendeur -> confirmation"
+ },
+ {
+  "title": "eYe JUNYA WATANABE ウール テーラードジャケット 紺",
+  "mercari_brand": "eYe COMME des GARCONS JUNYA WATANABE MAN",
+  "expected": "junya_watanabe",
+  "_why": "alias eYe (réel, observé 2026-08-04)"
+ },
+ {
+  "title": "GAP チノパン ネイビー ストレート 古着",
+  "mercari_brand": "Gap",
+  "expected": "needs_review",
+  "_why": "tag étranger = ignoré, jamais une confirmation"
  }
 ]
