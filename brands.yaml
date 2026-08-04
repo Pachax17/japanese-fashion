@@ -46,6 +46,8 @@ foreign_brands:
 priority:
   - junya_watanabe
   - cdg_homme_plus
+  - cdg_homme_deux
+  - cdg_shirt
   - cdg_homme
   - undercover
   - number_nine
@@ -77,6 +79,30 @@ brands:
       weak: ["オムプラス", "HOMME+"]
       negative: ["ジュンヤ", "JUNYA", "オムドゥ", "HOMME DEUX"]
     mercari_brand_names: []
+
+  cdg_homme_deux:
+    display: Comme des Garçons Homme Deux
+    search_keywords: ["コムデギャルソンオムドゥ", "HOMME DEUX"]
+    exclude: ["オムプリュス", "ジュンヤ"]
+    match:
+      strong: ["コムデギャルソンオムドゥ", "COMME des GARCONS HOMME DEUX", "オムドゥ", "HOMME DEUX"]
+      weak: []
+      # mutual-negative symmetry with Homme Plus: a title citing both lines is ambiguous
+      negative: ["オムプリュス", "HOMME PLUS", "ジュンヤ", "JUNYA"]
+    mercari_brand_names: ["COMME des GARCONS HOMME DEUX"]  # canonique — à confirmer par récolte
+
+  cdg_shirt:
+    display: Comme des Garçons SHIRT
+    search_keywords: ["コムデギャルソンシャツ", "COMME des GARCONS SHIRT"]
+    exclude: ["ジュンヤ"]
+    match:
+      # ⚠️ 'シャツ'/'SHIRT' seul = le mot générique « chemise » — UNIQUEMENT les composés complets.
+      # Katakana en regex-espacée GLUÉE : « コムデギャルソン シャツ » (mainline + vêtement) reste dehors.
+      strong: ["re:コムデギャルソンシャツ", "COMME des GARCONS SHIRT", "COMME des GARÇONS SHIRT",
+               "CDG SHIRT"]
+      weak: []
+      negative: ["ジュンヤ", "JUNYA"]
+    mercari_brand_names: ["COMME des GARCONS SHIRT"]  # vérifié live 2026-08-04 (item m92540853507)
 
   cdg_homme:
     display: Comme des Garçons Homme

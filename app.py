@@ -42,16 +42,11 @@ def inject_globals():
     return {"analytics_token": ANALYTICS_TOKEN}
 
 
-DISPLAY = {
-    "junya_watanabe": "Junya Watanabe MAN",
-    "cdg_homme_plus": "Comme des Garçons Homme Plus",
-    "cdg_homme": "Comme des Garçons Homme",
-    "undercover": "Undercover",
-    "number_nine": "Number (Nine)",
-    "lgb": "LGB (Le Grand Bleu)",
-    "tornado_mart": "Tornado Mart",
-    "pleats_please": "Pleats Please Issey Miyake",
-}
+# Single source of truth = brands.yaml (via the brands.py loader): a brand added
+# to the catalog config appears in the UI with zero code change. [AUDIT B1]
+from brands import BRANDS as _BRANDS
+
+DISPLAY = {key: cfg["display"] for key, cfg in _BRANDS.items()}
 CONDITION_LABEL = {
     "new": "New", "like_new": "Like new", "good": "Good", "fair": "Fair", "poor": "Poor",
 }

@@ -257,7 +257,8 @@
  },
  {
   "title": "COMME DES GARÇONS SHIRT アフリカン民族シャツ フランス製",
-  "expected": "needs_review"
+  "expected": "cdg_shirt",
+  "_why": "flippé 2026-08-04 : la ligne SHIRT est entrée au catalogue (décision PO)"
  },
  {
   "title": "NOZOMI ISHIGURO Sarouel Pants",
@@ -408,5 +409,28 @@
   "title": "ノースフェイス ゴアテックス マウンテンパーカー",
   "expected": "needs_review",
   "_why": "garde-fou : GORE-TEX (ゴアテックス) ne déclenche pas le foreign 'Goa'"
+ },
+ {
+  "title": "コムデギャルソンオムドゥ ウール テーラードジャケット",
+  "expected": "cdg_homme_deux"
+ },
+ {
+  "title": "COMME des GARCONS HOMME DEUX セットアップ スーツ ネイビー",
+  "expected": "cdg_homme_deux"
+ },
+ {
+  "title": "コムデギャルソンシャツ 長袖シャツ ストライプ",
+  "expected": "cdg_shirt",
+  "_why": "composé GLUÉ = la ligne SHIRT"
+ },
+ {
+  "title": "コムデギャルソン シャツ 古着 メンズ",
+  "expected": "needs_review",
+  "_why": "garde-fou : mainline + mot générique « chemise » ESPACÉ ≠ la ligne SHIRT"
+ },
+ {
+  "title": "オムプリュス HOMME DEUX 併売 ジャケット",
+  "expected": "needs_review",
+  "_why": "les deux lignes citées = ambigu -> négatifs mutuels"
  }
 ]
