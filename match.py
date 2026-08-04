@@ -28,7 +28,7 @@ from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
-from brands import MATCH, MATCH_PRIORITY, MERCARI_BRAND_NAMES
+from brands import FOREIGN_BRANDS, MATCH, MATCH_PRIORITY, MERCARI_BRAND_NAMES
 
 DATA_DIR = Path(__file__).parent / "data"
 IN_PATH = DATA_DIR / "listings_normalized.json"
@@ -79,6 +79,9 @@ _NORM = {
     for brand, cfg in MATCH.items()
 }
 
+# Foreign/niche brands we don't carry (Y2K cluster, dupes) — compiled once.
+_FOREIGN = _compile(FOREIGN_BRANDS)
+
 # Structured Mercari brand tag -> our brand key (normalized alias lookup).
 _TAG_LOOKUP = {
     normalize(name): brand
@@ -118,6 +121,11 @@ def match_brand(
         cfg = _NORM[brand]
         if not _hit(cfg["negative"], text, spaced) and _hit(cfg["strong"], text, spaced):
             return brand, STRONG_CONF
+    # [PO rule 2026-08-04] Weak evidence is only acceptable if NO foreign/niche
+    # brand is name-dropped in the title ("Goa LGB", "ifsixwasnine LGB y2k" =
+    # cross-listing / dupe spam -> quarantine). A strong hit above survives.
+    if _hit(_FOREIGN, text, spaced):
+        return "needs_review", 0.0
     for brand in MATCH_PRIORITY:
         cfg = _NORM[brand]
         if not _hit(cfg["negative"], text, spaced) and _hit(cfg["weak"], text, spaced):

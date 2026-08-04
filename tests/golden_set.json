@@ -378,5 +378,35 @@
   "mercari_brand": "Gap",
   "expected": "needs_review",
   "_why": "tag étranger = ignoré, jamais une confirmation"
+ },
+ {
+  "title": "L.G.B. Vネック Tシャツ ホワイト",
+  "expected": "lgb",
+  "_why": "trouvé par Paul en prod : forme pointée L.G.B. -> re:\\bl ?g ?b\\b"
+ },
+ {
+  "title": "L.G.B. ヘンリーネック Tシャツ カーキ",
+  "expected": "lgb",
+  "_why": "idem, 2e exemple réel de Paul"
+ },
+ {
+  "title": "Goa LGB アーカイブ フレアデニム y2k",
+  "expected": "needs_review",
+  "_why": "règle PO : marque étrangère citée -> le weak ne suffit plus"
+ },
+ {
+  "title": "ifsixwasnine LGB 14th addiction レイヤードベスト",
+  "expected": "needs_review",
+  "_why": "cross-listing du cluster Y2K -> quarantaine"
+ },
+ {
+  "title": "ルグランブルー レザーフレアパンツ Goa併売",
+  "expected": "lgb",
+  "_why": "un STRONG (nom complet) survit à la mention étrangère"
+ },
+ {
+  "title": "ノースフェイス ゴアテックス マウンテンパーカー",
+  "expected": "needs_review",
+  "_why": "garde-fou : GORE-TEX (ゴアテックス) ne déclenche pas le foreign 'Goa'"
  }
 ]

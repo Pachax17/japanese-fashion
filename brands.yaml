@@ -18,6 +18,31 @@
 #
 # priority = check order, most specific first (Junya before Homme Plus before Homme).
 
+# Niche/companion brands we do NOT carry (Y2K avant-garde cluster, dupe-adjacent).
+# Sellers name-drop them alongside ours ("Goa LGB", "ifsixwasnine LGB y2k") for reach.
+# Rule [PO 2026-08-04]: if any of these appears in a title, a WEAK match is not
+# enough -> needs_review. A STRONG hit (full brand name) still wins. If one of
+# these brands ever joins the catalog, move it to `brands:` and delete it here.
+foreign_brands:
+  - "re:\\bgoa\\b"
+  - "re:ゴア(?!テックス)"        # Goa katakana — negative lookahead spares GORE-TEX (ゴアテックス)
+  - "ifsixwasnine"
+  - "イフシックスワズナイン"
+  - "14th addiction"
+  - "フォーティーンスアディクション"
+  - "civarize"
+  - "シヴァーライズ"
+  - "re:\\bfuga\\b"
+  - "フーガ"
+  - "re:\\bmidas\\b"
+  - "ミダス"
+  - "kmrii"
+  - "ケムリ"
+  - "re:\\broen\\b"
+  - "ロエン"
+  - "share spirit"
+  - "シェアスピリット"
+
 priority:
   - junya_watanabe
   - cdg_homme_plus
@@ -91,8 +116,10 @@ brands:
     exclude: []
     match:
       strong: ["ルグランブルー", "Le Grand Bleu"]
-      # bare 'lgb' as substring would catch 'lgbt' — word-boundary regex instead:
-      weak: ["エルジービー", "re:\\blgb\\b"]
+      # bare 'lgb' as substring would catch 'lgbt' — word-boundary regex instead.
+      # \bl ?g ?b\b also catches the dotted form "L.G.B." (dots become spaces
+      # in the spaced normalization) — real inventory found by Paul 2026-08-04.
+      weak: ["エルジービー", "re:\\bl ?g ?b\\b"]
       negative: []
     mercari_brand_names: ["LGB", "L.G.B."]  # Mercari has BOTH brand entries (ids 4371 / 3848)
     mercari_brand_ids: [4371, 3848]

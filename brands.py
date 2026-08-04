@@ -8,6 +8,8 @@ Public interface (unchanged, so scrape.py / match.py need no edits):
 New:
   MERCARI_BRAND_NAMES : {key: [structured item_brand.name aliases]}
   MERCARI_BRAND_IDS   : {key: [Mercari numeric brand ids]}
+  FOREIGN_BRANDS      : [tokens] — niche brands we do NOT carry; their presence
+                        in a title demotes WEAK matches to needs_review
 
 Adding a brand = adding one YAML block (and its key to `priority`). The loader
 validates the file at import time and fails LOUDLY on a malformed config —
@@ -65,3 +67,5 @@ MATCH_PRIORITY = list(_DATA["priority"])
 MERCARI_BRAND_NAMES = {key: list(b["mercari_brand_names"]) for key, b in _DATA["brands"].items()}
 
 MERCARI_BRAND_IDS = {key: list(b["mercari_brand_ids"]) for key, b in _DATA["brands"].items()}
+
+FOREIGN_BRANDS = list(_DATA.get("foreign_brands") or [])
