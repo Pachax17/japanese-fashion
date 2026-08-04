@@ -43,6 +43,13 @@ jobs:
           python match.py      # classify BEFORE translating…
           python translate.py  # …so junk never burns DeepL quota [AUDIT B]
 
+      - name: Persist history snapshot to Neon   # [AUDIT A2]
+        # Sale-velocity dataset: snapshots + lifecycle (gone_at = sold proxy).
+        # No DATABASE_URL secret -> silent no-op. Never fails the pipeline.
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python history.py
+
       - name: Safety check — refuse to wipe the catalog
         # If Mercari blocked the cloud IP, scrape returns ~0 items. Don't commit
         # an empty catalog (that would blank the live site). Fail instead.
