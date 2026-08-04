@@ -28,6 +28,8 @@ CREATE TABLE IF NOT EXISTS listings (
     title_en         TEXT,
     brand            TEXT,
     brand_confidence REAL,
+    mercari_brand_id   INTEGER,   -- [AUDIT B] seller-picked structured brand
+    mercari_brand_name TEXT,
     category_raw     TEXT,
     size_raw         TEXT,
     size_norm        TEXT,
@@ -52,11 +54,13 @@ CREATE INDEX IF NOT EXISTS idx_listings_listed ON listings(listed_at);
 UPSERT = """
 INSERT INTO listings (
     id, source, source_item_id, title_ja, title_en, brand, brand_confidence,
+    mercari_brand_id, mercari_brand_name,
     category_raw, size_raw, size_norm, condition_raw, condition_norm,
     price_jpy, price_eur, images, mercari_url, buyee_item_url, listed_at, status,
     scraped_at, first_seen_at, last_seen_at
 ) VALUES (
     :id, :source, :source_item_id, :title_ja, :title_en, :brand, :brand_confidence,
+    :mercari_brand_id, :mercari_brand_name,
     :category_raw, :size_raw, :size_norm, :condition_raw, :condition_norm,
     :price_jpy, :price_eur, :images, :mercari_url, :buyee_item_url, :listed_at, :status,
     :scraped_at, :now, :now
@@ -64,6 +68,8 @@ INSERT INTO listings (
 ON CONFLICT(id) DO UPDATE SET
     title_ja=excluded.title_ja, title_en=excluded.title_en,
     brand=excluded.brand, brand_confidence=excluded.brand_confidence,
+    mercari_brand_id=excluded.mercari_brand_id,
+    mercari_brand_name=excluded.mercari_brand_name,
     category_raw=excluded.category_raw, size_raw=excluded.size_raw,
     size_norm=excluded.size_norm, condition_raw=excluded.condition_raw,
     condition_norm=excluded.condition_norm, price_jpy=excluded.price_jpy,
@@ -89,6 +95,8 @@ def to_row(x: dict, now: str) -> dict:
         "title_en": x.get("title_en"),
         "brand": x.get("brand"),
         "brand_confidence": x.get("brand_confidence"),
+        "mercari_brand_id": x.get("mercari_brand_id"),
+        "mercari_brand_name": x.get("mercari_brand_name"),
         "category_raw": x.get("category_raw"),
         "size_raw": x.get("size_raw"),
         "size_norm": x.get("size_norm"),
@@ -128,6 +136,15 @@ def main() -> None:
     conn = sqlite3.connect(DB_PATH)
     try:
         conn.executescript(SCHEMA)
+        # Cheap migration for pre-existing local DBs (Render rebuilds fresh anyway).
+        for stmt in (
+            "ALTER TABLE listings ADD COLUMN mercari_brand_id INTEGER",
+            "ALTER TABLE listings ADD COLUMN mercari_brand_name TEXT",
+        ):
+            try:
+                conn.execute(stmt)
+            except sqlite3.OperationalError:
+                pass  # column already exists
         conn.executemany(UPSERT, [to_row(x, now) for x in listings if x.get("id")])
         conn.commit()
 

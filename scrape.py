@@ -43,7 +43,7 @@ def _getattr_any(obj, *names, default=None):
     return default
 
 
-async def _build_record(item, brand_key: str) -> dict:
+async def _build_record(item, brand_key: str, raw_items: dict[str, dict]) -> dict:
     """Build one listing record, enriched with full details (condition / category / photos)."""
     item_id = _getattr_any(item, "id_", "id")
     created = _getattr_any(item, "created")  # datetime — when the item was first listed
@@ -61,6 +61,8 @@ async def _build_record(item, brand_key: str) -> dict:
         "category_raw": None,        # used by the parser to filter out footwear
         "size_raw": None,            # Mercari has NO structured size -> parsed from text in slice #2
         "description_ja": None,
+        "mercari_brand_id": None,    # [AUDIT B] seller-picked structured brand (item_brand)
+        "mercari_brand_name": None,
         "photos": list(_getattr_any(item, "thumbnails", default=[]) or []),
     }
     if item_id:
@@ -74,13 +76,19 @@ async def _build_record(item, brand_key: str) -> dict:
             photos = _getattr_any(full, "photos", default=[]) or []
             if photos:
                 record["photos"] = list(photos)
+            # [AUDIT B] join the RAW payload captured by the client spy:
+            # mercapi's model drops item_brand, but the endpoint returns it and
+            # we already paid for this request. Seller-picked, verified accurate.
+            braw = (raw_items.get(item_id) or {}).get("item_brand") or {}
+            record["mercari_brand_id"] = braw.get("id")
+            record["mercari_brand_name"] = braw.get("name")
             await asyncio.sleep(REQUEST_DELAY_S)
         except Exception as e:  # noqa: BLE001
             print(f"  [warn] full_item failed for {item_id}: {e}")
     return record
 
 
-async def scrape_brand(m: Mercapi, brand_key: str) -> list[dict]:
+async def scrape_brand(m: Mercapi, brand_key: str, raw_items: dict[str, dict]) -> list[dict]:
     """Collect up to MAX_ITEMS_PER_BRAND listings for one brand.
 
     [AUDIT C2] Searches ALL the brand's `search_keywords` (previously only the
@@ -123,7 +131,7 @@ async def scrape_brand(m: Mercapi, brand_key: str) -> list[dict]:
                 if not sid or sid in seen:
                     continue  # cross-keyword duplicate — skip before full_item()
                 seen.add(sid)
-                listings.append(await _build_record(item, brand_key))
+                listings.append(await _build_record(item, brand_key, raw_items))
 
             meta = getattr(results, "meta", None)
             if (len(listings) >= MAX_ITEMS_PER_BRAND
@@ -142,11 +150,29 @@ async def main() -> None:
     DATA_DIR.mkdir(exist_ok=True)
     m = Mercapi()
 
+    # [AUDIT B] Spy on the shared HTTP client to capture RAW item payloads:
+    # the item endpoint returns `item_brand` (seller-picked structured brand),
+    # which mercapi's models drop. Indexed by item id, joined in _build_record.
+    raw_items: dict[str, dict] = {}
+    _orig_send = m._client.send
+
+    async def _spying_send(request, **kwargs):
+        response = await _orig_send(request, **kwargs)
+        try:
+            data = response.json().get("data")
+            if isinstance(data, dict) and data.get("id"):
+                raw_items[data["id"]] = data
+        except Exception:  # noqa: BLE001 — non-JSON / unexpected shapes are fine
+            pass
+        return response
+
+    m._client.send = _spying_send
+
     # Scrape every configured brand, deduping across searches (an item can show up
     # under more than one keyword — e.g. Homme vs Homme Plus).
     by_id: dict[str, dict] = {}
     for brand_key in BRANDS:
-        for rec in await scrape_brand(m, brand_key):
+        for rec in await scrape_brand(m, brand_key, raw_items):
             sid = rec.get("source_item_id")
             if sid and sid not in by_id:
                 by_id[sid] = rec

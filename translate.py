@@ -7,8 +7,12 @@ noise, not prose. So we DON'T just throw it at MT. We:
      (longest keys first) so DeepL can't mangle them;
   3. send the cleaned string to DeepL for the remainder -> title_en.
 
-Input : data/junya_man_normalized.json
-Output: data/junya_man_translated.json
+Pipeline order [AUDIT B]: translate runs AFTER match — needs_review items
+(junk from the newest-first scrape, ~30% of volume) are skipped entirely and
+never spend DeepL quota.
+
+Input : data/listings_classified.json
+Output: data/listings_matched.json   (the committed seed)
 
 Setup: pip install -r requirements.txt ; cp .env.example .env ; put your key in .env
 Run  : python translate.py [--limit N]
@@ -27,8 +31,8 @@ from dotenv import load_dotenv
 
 HERE = Path(__file__).parent
 DATA_DIR = HERE / "data"
-IN_PATH = DATA_DIR / "listings_normalized.json"
-OUT_PATH = DATA_DIR / "listings_translated.json"
+IN_PATH = DATA_DIR / "listings_classified.json"
+OUT_PATH = DATA_DIR / "listings_matched.json"
 GLOSSARY_PATH = HERE / "fashion_glossary.yaml"
 # The committed seed from the previous run; reused as a translation cache so the
 # daily refresh only spends DeepL quota on *new* listings.
@@ -97,8 +101,11 @@ def main() -> None:
     todo = listings if args.limit is None else listings[: args.limit]
     print(f"[translate] {len(todo)} titles (glossary: {len(glossary)}, cached: {len(cache)})")
 
-    ok = reused = 0
+    ok = reused = skipped = 0
     for x in todo:
+        if x.get("brand") == "needs_review":
+            skipped += 1                 # [AUDIT B] junk never burns DeepL quota
+            continue
         sid = x.get("source_item_id")
         if sid in cache:                 # already translated in a previous run -> reuse
             x["title_en"] = cache[sid]
@@ -121,7 +128,7 @@ def main() -> None:
     # Safety: if we needed to translate new items but EVERY one failed, the key is
     # bad / quota is exhausted. Abort (non-zero) so CI doesn't ship a null catalog
     # and poison the cache for future runs.
-    attempted = len(todo) - reused
+    attempted = len(todo) - reused - skipped
     if attempted > 0 and ok == 0:
         sys.exit(f"ERROR: all {attempted} new translations failed (bad DEEPL_API_KEY or "
                  "quota?). Aborting so we don't publish an untranslated catalog.")
@@ -134,12 +141,12 @@ def main() -> None:
     if translator is not None:
         try:
             usage = translator.get_usage()
-            print(f"[translate] new={ok} reused={reused} of {len(todo)} | "
+            print(f"[translate] new={ok} reused={reused} junk-skipped={skipped} of {len(todo)} | "
                   f"DeepL usage: {usage.character.count}/{usage.character.limit} chars")
         except Exception as e:  # noqa: BLE001
-            print(f"[translate] new={ok} reused={reused} of {len(todo)} | usage unavailable: {e}")
+            print(f"[translate] new={ok} reused={reused} junk-skipped={skipped} of {len(todo)} | usage unavailable: {e}")
     else:
-        print(f"[translate] new=0 reused={reused} of {len(todo)} | DeepL not called (all cached)")
+        print(f"[translate] new=0 reused={reused} junk-skipped={skipped} of {len(todo)} | DeepL not called")
     print(f"[done] wrote -> {OUT_PATH}")
 
 

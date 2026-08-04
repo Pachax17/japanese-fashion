@@ -97,6 +97,8 @@ def normalize(raw: dict, scraped_at: str, fx_rate: float) -> dict:
         "title_en": None,                       # slice #3 (translation)
         "brand": raw.get("brand_guess"),        # provisional; slice #4 (matching) refines this
         "brand_confidence": None,               # slice #4
+        "mercari_brand_id": raw.get("mercari_brand_id"),      # [AUDIT B] structured seller tag
+        "mercari_brand_name": raw.get("mercari_brand_name"),
         "category_raw": raw.get("category_raw"),
         "size_raw": size_raw,
         "size_norm": size_norm,
