@@ -1,4 +1,4 @@
-"""Scrape Junya Watanabe MAN listings from Mercari and save to data/junya_man.json.
+"""Scrape all configured brands (brands.BRANDS) from Mercari -> data/listings_raw.json.
 
 Why Mercari and not Buyee:
   Buyee returns HTTP 403 to bots. The listing data actually lives on Mercari
@@ -81,39 +81,55 @@ async def _build_record(item, brand_key: str) -> dict:
 
 
 async def scrape_brand(m: Mercapi, brand_key: str) -> list[dict]:
+    """Collect up to MAX_ITEMS_PER_BRAND listings for one brand.
+
+    [AUDIT C2] Searches ALL the brand's `search_keywords` (previously only the
+    first one was used — the rest were dead config, and any listing not matching
+    keyword #1 was invisible). Cross-keyword duplicates are skipped by item id
+    BEFORE the expensive full_item() enrichment call.
+    """
     brand = BRANDS[brand_key]
-    keyword = brand["search_keywords"][0]
-    print(f"[search] {brand['display']} -> '{keyword}' (cap {MAX_ITEMS_PER_BRAND} items / {MAX_PAGES} pages)")
-
-    # Sort by listing date, newest first [AUDIT C1]. The mercapi default is
-    # SORT_SCORE (relevance): combined with MAX_ITEMS_PER_BRAND it collected an
-    # arbitrary "relevant" sample and silently missed fresh listings. Freshness
-    # IS the product — the cap must mean "the N most recent", not "N random".
-    results = await m.search(
-        keyword,
-        sort_by=SearchRequestData.SortBy.SORT_CREATED_TIME,
-        sort_order=SearchRequestData.SortOrder.ORDER_DESC,
-    )
     listings: list[dict] = []
-    page = 1
-    while results is not None:
-        items = getattr(results, "items", []) or []
-        print(f"  [page {page}] {len(items)} items (total so far: {len(listings)})")
-        for item in items:
-            if len(listings) >= MAX_ITEMS_PER_BRAND:
-                break
-            listings.append(await _build_record(item, brand_key))
+    seen: set[str] = set()
 
-        meta = getattr(results, "meta", None)
-        if (len(listings) >= MAX_ITEMS_PER_BRAND
-                or page >= MAX_PAGES
-                or not meta
-                or not getattr(meta, "next_page_token", None)):
+    for keyword in brand["search_keywords"]:
+        if len(listings) >= MAX_ITEMS_PER_BRAND:
             break
-        results = await results.next_page()
-        page += 1
+        print(f"[search] {brand['display']} -> '{keyword}' "
+              f"(cap {MAX_ITEMS_PER_BRAND} items / {MAX_PAGES} pages)")
 
-    print(f"[search] collected {len(listings)} listings across {page} page(s)")
+        # Sort by listing date, newest first [AUDIT C1]. The mercapi default is
+        # SORT_SCORE (relevance): combined with MAX_ITEMS_PER_BRAND it collected
+        # an arbitrary "relevant" sample and silently missed fresh listings.
+        # Freshness IS the product — the cap must mean "the N most recent".
+        results = await m.search(
+            keyword,
+            sort_by=SearchRequestData.SortBy.SORT_CREATED_TIME,
+            sort_order=SearchRequestData.SortOrder.ORDER_DESC,
+        )
+        page = 1
+        while results is not None:
+            items = getattr(results, "items", []) or []
+            print(f"  [page {page}] {len(items)} items (brand total: {len(listings)})")
+            for item in items:
+                if len(listings) >= MAX_ITEMS_PER_BRAND:
+                    break
+                sid = _getattr_any(item, "id_", "id")
+                if not sid or sid in seen:
+                    continue  # cross-keyword duplicate — skip before full_item()
+                seen.add(sid)
+                listings.append(await _build_record(item, brand_key))
+
+            meta = getattr(results, "meta", None)
+            if (len(listings) >= MAX_ITEMS_PER_BRAND
+                    or page >= MAX_PAGES
+                    or not meta
+                    or not getattr(meta, "next_page_token", None)):
+                break
+            results = await results.next_page()
+            page += 1
+
+    print(f"[search] {brand['display']}: collected {len(listings)} unique listings")
     return listings
 
 
