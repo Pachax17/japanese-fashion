@@ -12,8 +12,12 @@ Algorithm (see brands.MATCH / MATCH_PRIORITY):
   - `strong` hit => 0.95, `weak`-only hit => 0.65
   - nothing above threshold => brand = 'needs_review' (held back, not displayed)
 
-Input : data/junya_man_translated.json
-Output: data/junya_man_matched.json
+Pipeline order [AUDIT B]: match runs BEFORE translate — classification only
+needs title_ja tokens + the structured Mercari tag, so junk gets quarantined
+before it can burn DeepL quota (~30% of scraped volume).
+
+Input : data/listings_normalized.json
+Output: data/listings_classified.json
 Run   : python match.py
 """
 
@@ -27,9 +31,8 @@ from pathlib import Path
 from brands import MATCH, MATCH_PRIORITY, MERCARI_BRAND_NAMES
 
 DATA_DIR = Path(__file__).parent / "data"
-IN_PATH = DATA_DIR / "listings_translated.json"
-NORM_PATH = DATA_DIR / "listings_normalized.json"  # fallback if not translated yet
-OUT_PATH = DATA_DIR / "listings_matched.json"
+IN_PATH = DATA_DIR / "listings_normalized.json"
+OUT_PATH = DATA_DIR / "listings_classified.json"
 
 CONFIDENCE_THRESHOLD = 0.6
 TAG_CONF = 0.98      # seller-picked structured Mercari brand tag (item_brand.name)
@@ -123,7 +126,7 @@ def match_brand(
 
 
 def main() -> None:
-    src = IN_PATH if IN_PATH.exists() else NORM_PATH
+    src = IN_PATH
     payload = json.loads(src.read_text(encoding="utf-8"))
     listings = payload.get("listings", [])
 

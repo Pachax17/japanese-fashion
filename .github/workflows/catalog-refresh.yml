@@ -29,14 +29,19 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run pipeline (scrape -> parse -> translate -> match)
+      - name: Run matcher regression tests   # [AUDIT B2] the moat ships tested or not at all
+        run: |
+          pip install -q pytest
+          python -m pytest -q tests/
+
+      - name: Run pipeline (scrape -> parse -> match -> translate)
         env:
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
         run: |
           python scrape.py
           python parse.py
-          python translate.py
-          python match.py
+          python match.py      # classify BEFORE translating…
+          python translate.py  # …so junk never burns DeepL quota [AUDIT B]
 
       - name: Safety check — refuse to wipe the catalog
         # If Mercari blocked the cloud IP, scrape returns ~0 items. Don't commit
