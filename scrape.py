@@ -89,6 +89,10 @@ async def scrape_brand(m: Mercapi, brand_key: str) -> list[dict]:
     BEFORE the expensive full_item() enrichment call.
     """
     brand = BRANDS[brand_key]
+    # [AUDIT C3] Push the brand's exclude terms into the Mercari query itself
+    # (mercapi supports `exclude`); previously BRANDS[*]["exclude"] was dead
+    # config and excluded items wasted network calls + DeepL quota downstream.
+    exclude = " ".join(brand.get("exclude") or []) or None
     listings: list[dict] = []
     seen: set[str] = set()
 
@@ -106,6 +110,7 @@ async def scrape_brand(m: Mercapi, brand_key: str) -> list[dict]:
             keyword,
             sort_by=SearchRequestData.SortBy.SORT_CREATED_TIME,
             sort_order=SearchRequestData.SortOrder.ORDER_DESC,
+            exclude=exclude,
         )
         page = 1
         while results is not None:
