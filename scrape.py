@@ -28,8 +28,8 @@ BUYEE_ITEM_URL = "https://buyee.jp/mercari/item/{item_id}?conversionType=Mercari
 MERCARI_ITEM_URL = "https://jp.mercari.com/item/{item_id}"
 
 # Politeness / scope knobs
-MAX_ITEMS_PER_BRAND = 100   # hard cap on listings collected per brand (across pages)
-MAX_PAGES = 10              # safety cap on pagination
+MAX_ITEMS_PER_BRAND = 150   # hard cap on listings collected per brand (across pages)
+MAX_PAGES = 15              # safety cap on pagination
 REQUEST_DELAY_S = 0.6       # pause between detail requests — be a good citizen
 
 

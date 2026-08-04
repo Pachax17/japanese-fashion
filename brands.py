@@ -53,6 +53,9 @@ BRANDS = {
         "search_keywords": ["プリーツプリーズ", "PLEATS PLEASE"],
         "exclude": ["オムプリッセ", "HOMME PLISSE"],  # exclude the MEN's pleats line
     },
+
+    # TODO: add more brands here (and in MATCH_PRIORITY / MATCH below) as needed.
+    # Saint Laurent, Maison Margiela, Yohji Yamamoto, Visvim, Kapital, etc.
 }
 
 # --- Brand-matching config -------------------------------------------------
