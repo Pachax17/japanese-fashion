@@ -20,6 +20,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from mercapi import Mercapi
+from mercapi.requests.search import SearchRequestData
 
 from brands import BRANDS
 
@@ -84,7 +85,15 @@ async def scrape_brand(m: Mercapi, brand_key: str) -> list[dict]:
     keyword = brand["search_keywords"][0]
     print(f"[search] {brand['display']} -> '{keyword}' (cap {MAX_ITEMS_PER_BRAND} items / {MAX_PAGES} pages)")
 
-    results = await m.search(keyword)
+    # Sort by listing date, newest first [AUDIT C1]. The mercapi default is
+    # SORT_SCORE (relevance): combined with MAX_ITEMS_PER_BRAND it collected an
+    # arbitrary "relevant" sample and silently missed fresh listings. Freshness
+    # IS the product — the cap must mean "the N most recent", not "N random".
+    results = await m.search(
+        keyword,
+        sort_by=SearchRequestData.SortBy.SORT_CREATED_TIME,
+        sort_order=SearchRequestData.SortOrder.ORDER_DESC,
+    )
     listings: list[dict] = []
     page = 1
     while results is not None:
