@@ -69,3 +69,24 @@ jobs:
               echo "push attempt $attempt failed, retrying..."; sleep 5
             done
           fi
+
+      - name: Alert on failure (ntfy.sh)  # [AUDIT D1]
+        # A dead cron is invisible: the site keeps serving a stale catalog and
+        # nobody notices (June's DeepL outage went weeks undetected). Push a
+        # notification on ANY step failure. Setup: add a repo secret NTFY_TOPIC
+        # (a private, hard-to-guess topic name) and subscribe to it in the ntfy
+        # app / browser at https://ntfy.sh. No secret set -> step is a no-op.
+        if: failure()
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: |
+          if [ -n "$NTFY_TOPIC" ]; then
+            curl -s \
+              -H "Title: Mekke catalog refresh FAILED" \
+              -H "Priority: high" \
+              -H "Tags: rotating_light" \
+              -d "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              "https://ntfy.sh/$NTFY_TOPIC"
+          else
+            echo "NTFY_TOPIC secret not set — no notification sent."
+          fi
