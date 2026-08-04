@@ -2,7 +2,7 @@
 
 ## 1. Vue d'ensemble
 
-Ce projet est un **agrégateur / vitrine de mode japonaise d'occasion** : il scrape des annonces de marques ciblées (Junya Watanabe, Comme des Garçons, Undercover, Number (Nine), LGB, Tornado Mart, Pleats Please) depuis **Mercari Japan**, puis les nettoie, les traduit en anglais, les classe par marque et les stocke dans une base **SQLite**. Un petit site **Flask** affiche ensuite ce catalogue sous forme de grille filtrable (marque / taille / état / prix), avec fiche détaillée et redirection vers Mercari ou le proxy d'achat Buyee. Le tout se rafraîchit **automatiquement chaque jour** via GitHub Actions, qui recommit le catalogue et déclenche un redéploiement sur Render.
+Ce projet est un **agrégateur / vitrine de mode japonaise d'occasion** : il scrape des annonces de marques ciblées (Junya Watanabe, Comme des Garçons, Undercover, Number (Nine), LGB, Tornado Mart, Pleats Please) depuis **Mercari Japan**, puis les nettoie, les traduit en anglais, les classe par marque et les stocke dans une base **SQLite**. Un petit site **Flask** affiche ensuite ce catalogue sous forme de grille filtrable (marque / taille / état / prix), avec fiche détaillée et redirection vers Mercari ou le proxy d'achat Buyee. Le tout se rafraîchit **automatiquement toutes les 6 heures** via GitHub Actions, qui recommit le catalogue et déclenche un redéploiement sur Render.
 
 **Le cœur de la valeur** (le « moat ») n'est pas le scraping brut, mais la **couche de curation** : matching de marque fiable (les sous-lignes CdG/Junya se cross-taggent constamment) + traduction propre des titres bruités.
 
@@ -29,7 +29,7 @@ Ce projet est un **agrégateur / vitrine de mode japonaise d'occasion** : il scr
 | [fx.py](fx.py) | Récupère le taux JPY→EUR live via **Frankfurter** (données BCE, sans clé), avec fallback `0.0060`. Applique un markup Mercari (×1,0632, ~6,3 % de marge FX) pour coller au prix EUR affiché par Mercari. Utilisé par `parse.py`. |
 | [fashion_glossary.yaml](fashion_glossary.yaml) | Table de pré-substitution JA→EN (marques + jargon garment / tissu / couleur) appliquée **avant** DeepL, clés les plus longues d'abord. Utilisé par `translate.py`. |
 | [render.yaml](render.yaml) | Config déploiement Render : `buildCommand` = `pip install && python db.py` (reconstruit la DB depuis le seed), `startCommand` = gunicorn. |
-| [.github/workflows/daily-refresh.yml](.github/workflows/daily-refresh.yml) | **Orchestrateur.** Cron 03:00 UTC : lance scrape→parse→translate→match, **safety check** (refuse de commit si <50 listings — signe d'un blocage IP), commit le seed, `git pull --rebase -X theirs` + push (déclenche le redéploiement Render). |
+| [.github/workflows/catalog-refresh.yml](.github/workflows/catalog-refresh.yml) | **Orchestrateur.** Cron toutes les 6 h (00/06/12/18 UTC) : lance scrape→parse→translate→match, **safety check** (refuse de commit si <50 listings — signe d'un blocage IP), commit le seed, `git pull --rebase -X theirs` + push (déclenche le redéploiement Render). **Alerte ntfy.sh sur échec** (secret `NTFY_TOPIC`) — [AUDIT D1]. |
 | `Procfile` | `web: gunicorn app:app` — fallback de déploiement. |
 | `templates/index.html`, `templates/detail.html` | Vues de la grille et de la fiche produit. |
 | `requirements.txt` | Dépendances (mercapi, deepl, PyYAML, Flask, gunicorn, python-dotenv). |
@@ -71,7 +71,7 @@ Ce projet est un **agrégateur / vitrine de mode japonaise d'occasion** : il scr
 
 ## 4. État actuel
 
-**Le projet est complet et déployé de bout en bout.** Les 6 étages fonctionnent, le rafraîchissement quotidien tourne (les commits `chore: daily catalog refresh` sont générés automatiquement par le bot GitHub Actions), et le catalogue actuel contient **~641 listings matchés** sur 8 marques.
+**Le projet est complet et déployé de bout en bout.** Les 6 étages fonctionnent, le rafraîchissement toutes les 6 h tourne (les commits `chore: catalog refresh` sont générés automatiquement par le bot GitHub Actions), et le catalogue actuel contient **~694 listings matchés** sur 8 marques. **Audit Task Force en cours (2026-08-04, option B — business)** : findings et décisions dans le dossier vault `AUDIT/` ; fixes scraping C1–C3 + alerte CI D1 implémentés sur la branche `pre-prod`.
 
 **Chronologie récente (git) — les derniers chantiers étaient produit / UX, pas infra :**
 - `9576895` — âge des annonces + badge « NEW » (<1j) → le dernier point travaillé (voir `app.py::age_bucket`).
@@ -80,11 +80,11 @@ Ce projet est un **agrégateur / vitrine de mode japonaise d'occasion** : il scr
 **Signaux d'un travail « en pause à mi-chemin » (opportunités de monétisation dormantes) :**
 - 💤 **Skimlinks inerte** : `affiliate_url()` existe mais reste désactivé tant que `SKIMLINKS_ID` n'est pas set (compte non approuvé). La redirection par défaut est passée à Mercari.
 - 💤 **Waitlist email** : la barre d'inscription est cachée tant que `WAITLIST_ACTION` (Formspree) n'est pas configuré.
-- 💤 **Analytics** : Cloudflare optionnel, désactivé sans token.
+- ✅ **Analytics** : Plausible intégré (index + detail, commit `ff48ed5`) — remplace GTM/Cloudflare.
 - 📊 **Table `clicks`** : les clics sortants sont loggés mais il n'y a **aucune vue / dashboard** pour les lire — la donnée s'accumule sans être exploitée.
 
 **Suite logique (par ordre de valeur) :**
 1. **Activer une brique de monétisation / rétention** : soit approuver Skimlinks (revenu), soit brancher la waitlist Formspree (audience) — les deux sont câblés, il ne manque que la variable d'env.
 2. **Exploiter la table `clicks`** : une route admin `/stats` (annonces / marques les plus cliquées) transformerait la télémétrie déjà collectée en signal de curation.
-3. **Nettoyer les artefacts `junya_man*.json`** dans `data/` (prototype mono-marque obsolète, source de confusion).
-4. **Robustesse du scraping** : le safety-check CI (`<50 listings`) protège contre un blocage IP, mais il n'y a pas d'alerte quand ça arrive silencieusement — un ping (Slack / email) sur échec du workflow serait le prochain durcissement.
+3. ~~**Nettoyer les artefacts `junya_man*.json`**~~ ✅ fait (audit 2026-08-04 — fichiers non trackés, supprimés localement).
+4. ~~**Robustesse du scraping** : alerte sur échec silencieux du workflow~~ ✅ fait (audit 2026-08-04 — step ntfy.sh `if: failure()`, actif dès que le secret `NTFY_TOPIC` est créé et la branche mergée).

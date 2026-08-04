@@ -109,6 +109,20 @@ def to_row(x: dict, now: str) -> dict:
 def main() -> None:
     payload = json.loads(IN_PATH.read_text(encoding="utf-8"))
     listings = payload.get("listings", [])
+
+    # [AUDIT A] Defensive dedupe. A git auto-merge of the generated seed once
+    # produced exact-duplicate entries; SQLite then checks the UNIQUE
+    # source_item_id index BEFORE the ON CONFLICT(id) clause can absorb the
+    # row, and the whole build dies. Last occurrence wins.
+    unique: dict[str, dict] = {}
+    for x in listings:
+        key = x.get("source_item_id") or x.get("id")
+        if key:
+            unique[key] = x
+    if len(unique) != len(listings):
+        print(f"[db] WARNING: dropped {len(listings) - len(unique)} duplicate listings from seed")
+    listings = list(unique.values())
+
     now = datetime.now(timezone.utc).isoformat()
 
     conn = sqlite3.connect(DB_PATH)
