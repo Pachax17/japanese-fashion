@@ -1,0 +1,122 @@
+# Brand config — the single place to add/tune a brand. [AUDIT B1]
+# Loaded and validated by brands.py (same exports as before: BRANDS, MATCH, MATCH_PRIORITY).
+#
+# Per brand:
+#   display          : name shown in the UI
+#   search_keywords  : ALL are searched on Mercari (scrape.py loops over them)
+#   exclude          : terms sent server-side to the Mercari query (exclude param)
+#   match:
+#     strong         : full/unambiguous brand token          -> confidence 0.95
+#     weak           : slang/partial token                   -> confidence 0.65
+#     negative       : if present, this brand is disqualified
+#     Tokens are matched against a normalized title (NFKC, lowercase, no spaces/punct).
+#     Tokens starting with "re:" are regexes, evaluated on a SPACED normalized title
+#     (NFKC, lowercase, punctuation->space) — use for word-boundary cases like \blgb\b.
+#   mercari_brand_names : seller-picked structured brand tags (item_brand.name) that
+#     CONFIRM this brand — harvested from real full_item data. Positive signal only.
+#   mercari_brand_ids   : Mercari's numeric brand ids (future: brand-id search recall).
+#
+# priority = check order, most specific first (Junya before Homme Plus before Homme).
+
+priority:
+  - junya_watanabe
+  - cdg_homme_plus
+  - cdg_homme
+  - undercover
+  - number_nine
+  - lgb
+  - tornado_mart
+  - pleats_please
+
+brands:
+  # --- CdG / Junya (menswear lines) ---
+  junya_watanabe:
+    display: Junya Watanabe MAN
+    search_keywords: ["ジュンヤワタナベマン", "JUNYA WATANABE MAN"]
+    exclude: ["レディース", "ウィメンズ", "women"]
+    match:
+      strong: ["ジュンヤワタナベマン", "JUNYA WATANABE MAN", "JUNYA WATANABE", "ジュンヤワタナベ",
+               "JYUNYA WATANABE"]  # common romaji misspelling seen in real data
+      weak: ["ジュンヤ", "JUNYA", "JYUNYA"]
+      negative: []
+    mercari_brand_names: ["JUNYA WATANABE MAN", "JUNYA WATANABE COMME des GARCONS",
+                          "eYe COMME des GARCONS JUNYA WATANABE MAN", "EYE JUNYA WATANABE MAN"]
+
+  cdg_homme_plus:
+    display: Comme des Garçons Homme Plus
+    search_keywords: ["コムデギャルソンオムプリュス", "オムプリュス", "HOMME PLUS"]
+    exclude: ["オムドゥ", "HOMME DEUX", "シャツ", "SHIRT", "ジュンヤ"]
+    match:
+      strong: ["コムデギャルソンオムプリュス", "COMME des GARCONS HOMME PLUS", "HOMME PLUS", "オムプリュス",
+               "HOMME PULUS"]  # 'PULUS' = common romaji misspelling of PLUS (real data)
+      weak: ["オムプラス", "HOMME+"]
+      negative: ["ジュンヤ", "JUNYA", "オムドゥ", "HOMME DEUX"]
+    mercari_brand_names: []
+
+  cdg_homme:
+    display: Comme des Garçons Homme
+    search_keywords: ["コムデギャルソンオム", "COMME des GARCONS HOMME"]
+    exclude: ["オムプリュス", "HOMME PLUS", "オムドゥ", "HOMME DEUX", "シャツ", "SHIRT", "ジュンヤ"]
+    match:
+      strong: ["コムデギャルソンオム", "COMME des GARCONS HOMME"]
+      weak: ["ギャルソンオム"]
+      negative: ["オムプリュス", "HOMME PLUS", "HOMME PULUS", "オムドゥ", "HOMME DEUX", "ジュンヤ", "JUNYA"]
+    mercari_brand_names: []
+
+  # --- Ura-Harajuku / archive ---
+  undercover:
+    display: Undercover
+    search_keywords: ["アンダーカバー", "UNDERCOVER"]
+    exclude: []
+    match:
+      strong: ["アンダーカバー", "UNDERCOVER"]  # substring also catches UNDERCOVERISM etc.
+      weak: ["アンカバ"]
+      negative: []
+    mercari_brand_names: []
+
+  number_nine:
+    display: Number (Nine)
+    search_keywords: ["ナンバーナイン", "NUMBER NINE"]
+    exclude: ["ソロイスト", "TheSoloist"]
+    match:
+      strong: ["ナンバーナイン", "NUMBER NINE"]  # "NUMBER (N)INE" normalizes to 'numbernine' too
+      weak: ["ナンバナイン"]
+      negative: ["ソロイスト", "THE SOLOIST", "TAKAHIROMIYASHITA"]  # his later label
+    mercari_brand_names: []
+
+  # --- Y2K Japanese ---
+  lgb:
+    display: LGB (Le Grand Bleu)
+    search_keywords: ["ルグランブルー", "Le Grand Bleu"]
+    exclude: []
+    match:
+      strong: ["ルグランブルー", "Le Grand Bleu"]
+      # NOT using bare "LGB" (would match 'lgbt' etc.) — word-boundary regex support lands next commit
+      weak: ["エルジービー"]
+      negative: []
+    mercari_brand_names: ["LGB"]
+    mercari_brand_ids: [4371]
+
+  tornado_mart:
+    display: Tornado Mart
+    search_keywords: ["トルネードマート", "TORNADO MART"]
+    exclude: []
+    match:
+      strong: ["トルネードマート", "TORNADO MART"]
+      weak: []  # bare 'トルネード'/'tornado' too generic
+      negative: []
+    mercari_brand_names: []
+
+  # --- Issey Miyake (womenswear line) ---
+  pleats_please:
+    display: Pleats Please Issey Miyake
+    search_keywords: ["プリーツプリーズ", "PLEATS PLEASE"]
+    exclude: ["オムプリッセ", "HOMME PLISSE"]  # exclude the MEN's pleats line
+    match:
+      strong: ["プリーツプリーズ", "PLEATS PLEASE"]
+      weak: []
+      negative: ["オムプリッセ", "HOMME PLISSE", "プリッセ"]
+    mercari_brand_names: []
+
+  # TODO: add more brands here — one YAML block, no code change needed.
+  # Candidates: Yohji Yamamoto, Issey Miyake mainline, Kapital, Visvim, Margiela…
