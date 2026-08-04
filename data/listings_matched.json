@@ -6,7 +6,7 @@
   "input_count": 769,
   "dropped_shops": 33,
   "dropped_non_clothing": 84,
-  "count": 652,
+  "count": 657,
   "listings": [
     {
       "id": "mercari_m73171800944",
@@ -319,13 +319,13 @@
       "title_en": "13SS Junya Watanabe MAN Linen Shirt",
       "brand": "junya_watanabe",
       "brand_confidence": 0.95,
-      "category_raw": "パンツ",
-      "size_raw": "M",
-      "size_norm": "M",
-      "condition_raw": "未使用に近い",
-      "condition_norm": "like_new",
-      "price_jpy": 19900,
-      "price_eur": 126.95,
+      "category_raw": "トップス",
+      "size_raw": "XS",
+      "size_norm": "XS",
+      "condition_raw": "目立った傷や汚れなし",
+      "condition_norm": "good",
+      "price_jpy": 11000,
+      "price_eur": 70.17,
       "images": [
         "https://static.mercdn.net/item/detail/orig/photos/m93298878809_1.jpg?1784791322",
         "https://static.mercdn.net/item/detail/orig/photos/m93298878809_2.jpg?1784791322",
@@ -342,7 +342,7 @@
       ],
       "status": "ITEM_STATUS_ON_SALE",
       "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.177691+00:00"
+      "normalized_at": "2026-08-04T09:04:09.177773+00:00"
     },
     {
       "id": "mercari_m30317041586",
@@ -408,42 +408,6 @@
       "status": "ITEM_STATUS_ON_SALE",
       "scraped_at": "2026-08-04T09:03:58.920769+00:00",
       "normalized_at": "2026-08-04T09:04:09.177728+00:00"
-    },
-    {
-      "id": "mercari_m93298878809",
-      "source": "mercari",
-      "source_item_id": "m93298878809",
-      "mercari_url": "https://jp.mercari.com/item/m93298878809",
-      "buyee_item_url": "https://buyee.jp/mercari/item/m93298878809?conversionType=Mercari_DirectSearch",
-      "listed_at": "2026-07-23T07:22:02",
-      "title_ja": "13SS Junya Watanabe MAN Linen Shirt",
-      "title_en": "13SS Junya Watanabe MAN Linen Shirt",
-      "brand": "junya_watanabe",
-      "brand_confidence": 0.95,
-      "category_raw": "トップス",
-      "size_raw": "XS",
-      "size_norm": "XS",
-      "condition_raw": "目立った傷や汚れなし",
-      "condition_norm": "good",
-      "price_jpy": 11000,
-      "price_eur": 70.17,
-      "images": [
-        "https://static.mercdn.net/item/detail/orig/photos/m93298878809_1.jpg?1784791322",
-        "https://static.mercdn.net/item/detail/orig/photos/m93298878809_2.jpg?1784791322",
-        "https://static.mercdn.net/item/detail/orig/photos/m93298878809_3.jpg?1784791322",
-        "https://static.mercdn.net/item/detail/orig/photos/m93298878809_4.jpg?1784791322",
-        "https://static.mercdn.net/item/detail/orig/photos/m93298878809_5.jpg?1784791322",
-        "https://static.mercdn.net/item/detail/orig/photos/m93298878809_6.jpg?1784791322",
-        "https://static.mercdn.net/item/detail/orig/photos/m93298878809_7.jpg?1784791322",
-        "https://static.mercdn.net/item/detail/orig/photos/m93298878809_8.jpg?1784791322",
-        "https://static.mercdn.net/item/detail/orig/photos/m93298878809_9.jpg?1784791322",
-        "https://static.mercdn.net/item/detail/orig/photos/m93298878809_10.jpg?1784791322",
-        "https://static.mercdn.net/item/detail/orig/photos/m93298878809_11.jpg?1784791322",
-        "https://static.mercdn.net/item/detail/orig/photos/m93298878809_12.jpg?1784791557"
-      ],
-      "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.177773+00:00"
     },
     {
       "id": "mercari_m74529640285",
@@ -593,27 +557,25 @@
       "title_en": "JUNYA WATANABE MAN Nylon Shirt JK Junya Size S",
       "brand": "junya_watanabe",
       "brand_confidence": 0.95,
-      "category_raw": "トップス",
-      "size_raw": null,
-      "size_norm": null,
+      "category_raw": "ジャケット・アウター",
+      "size_raw": "S",
+      "size_norm": "S",
       "condition_raw": "目立った傷や汚れなし",
       "condition_norm": "good",
-      "price_jpy": 28000,
-      "price_eur": 178.62,
+      "price_jpy": 27800,
+      "price_eur": 177.34,
       "images": [
-        "https://static.mercdn.net/item/detail/orig/photos/m73650081815_1.jpg?1785638027",
-        "https://static.mercdn.net/item/detail/orig/photos/m73650081815_2.jpg?1785638027",
-        "https://static.mercdn.net/item/detail/orig/photos/m73650081815_3.jpg?1785638027",
-        "https://static.mercdn.net/item/detail/orig/photos/m73650081815_4.jpg?1785638027",
-        "https://static.mercdn.net/item/detail/orig/photos/m73650081815_5.jpg?1785638027",
-        "https://static.mercdn.net/item/detail/orig/photos/m73650081815_6.jpg?1785638027",
-        "https://static.mercdn.net/item/detail/orig/photos/m73650081815_7.jpg?1785638027",
-        "https://static.mercdn.net/item/detail/orig/photos/m73650081815_8.jpg?1785638027",
-        "https://static.mercdn.net/item/detail/orig/photos/m73650081815_9.jpg?1785638027"
+        "https://static.mercdn.net/item/detail/orig/photos/m24559161194_1.jpg?1780709871",
+        "https://static.mercdn.net/item/detail/orig/photos/m24559161194_2.jpg?1780521741",
+        "https://static.mercdn.net/item/detail/orig/photos/m24559161194_3.jpg?1780709871",
+        "https://static.mercdn.net/item/detail/orig/photos/m24559161194_4.jpg?1775563329",
+        "https://static.mercdn.net/item/detail/orig/photos/m24559161194_5.jpg?1754832673",
+        "https://static.mercdn.net/item/detail/orig/photos/m24559161194_6.jpg?1754832673",
+        "https://static.mercdn.net/item/detail/orig/photos/m24559161194_7.jpg?1754832673"
       ],
       "status": "ITEM_STATUS_ON_SALE",
       "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.177877+00:00"
+      "normalized_at": "2026-08-04T09:04:09.178066+00:00"
     },
     {
       "id": "mercari_m71855128959",
@@ -916,37 +878,6 @@
       "normalized_at": "2026-08-04T09:04:09.178057+00:00"
     },
     {
-      "id": "mercari_m24559161194",
-      "source": "mercari",
-      "source_item_id": "m24559161194",
-      "mercari_url": "https://jp.mercari.com/item/m24559161194",
-      "buyee_item_url": "https://buyee.jp/mercari/item/m24559161194?conversionType=Mercari_DirectSearch",
-      "listed_at": "2025-08-10T13:31:13",
-      "title_ja": "JUNYA WATANABE MAN ナイロンシャツJKジュンヤSサイズ",
-      "title_en": "JUNYA WATANABE MAN Nylon Shirt JK Junya Size S",
-      "brand": "junya_watanabe",
-      "brand_confidence": 0.95,
-      "category_raw": "ジャケット・アウター",
-      "size_raw": "S",
-      "size_norm": "S",
-      "condition_raw": "目立った傷や汚れなし",
-      "condition_norm": "good",
-      "price_jpy": 27800,
-      "price_eur": 177.34,
-      "images": [
-        "https://static.mercdn.net/item/detail/orig/photos/m24559161194_1.jpg?1780709871",
-        "https://static.mercdn.net/item/detail/orig/photos/m24559161194_2.jpg?1780521741",
-        "https://static.mercdn.net/item/detail/orig/photos/m24559161194_3.jpg?1780709871",
-        "https://static.mercdn.net/item/detail/orig/photos/m24559161194_4.jpg?1775563329",
-        "https://static.mercdn.net/item/detail/orig/photos/m24559161194_5.jpg?1754832673",
-        "https://static.mercdn.net/item/detail/orig/photos/m24559161194_6.jpg?1754832673",
-        "https://static.mercdn.net/item/detail/orig/photos/m24559161194_7.jpg?1754832673"
-      ],
-      "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.178066+00:00"
-    },
-    {
       "id": "mercari_m88114754015",
       "source": "mercari",
       "source_item_id": "m88114754015",
@@ -1176,8 +1107,8 @@
       "size_norm": "S",
       "condition_raw": "目立った傷や汚れなし",
       "condition_norm": "good",
-      "price_jpy": 20000,
-      "price_eur": 127.58,
+      "price_jpy": 18880,
+      "price_eur": 120.44,
       "images": [
         "https://static.mercdn.net/item/detail/orig/photos/m65495172742_1.jpg?1782285529",
         "https://static.mercdn.net/item/detail/orig/photos/m65495172742_2.jpg?1782285529",
@@ -1193,7 +1124,7 @@
       ],
       "status": "ITEM_STATUS_ON_SALE",
       "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.178241+00:00"
+      "normalized_at": "2026-08-04T09:04:09.178374+00:00"
     },
     {
       "id": "mercari_m25930151272",
@@ -1326,41 +1257,6 @@
       "status": "ITEM_STATUS_ON_SALE",
       "scraped_at": "2026-08-04T09:03:58.920769+00:00",
       "normalized_at": "2026-08-04T09:04:09.178344+00:00"
-    },
-    {
-      "id": "mercari_m65495172742",
-      "source": "mercari",
-      "source_item_id": "m65495172742",
-      "mercari_url": "https://jp.mercari.com/item/m65495172742",
-      "buyee_item_url": "https://buyee.jp/mercari/item/m65495172742?conversionType=Mercari_DirectSearch",
-      "listed_at": "2026-06-24T07:18:49",
-      "title_ja": "JUNYA WATANABE MAN ノルディック柄 ニットパンツ ウール",
-      "title_en": "JUNYA WATANABE MAN Nordic-patterned wool knit pants",
-      "brand": "junya_watanabe",
-      "brand_confidence": 0.95,
-      "category_raw": "パンツ",
-      "size_raw": "S",
-      "size_norm": "S",
-      "condition_raw": "目立った傷や汚れなし",
-      "condition_norm": "good",
-      "price_jpy": 18880,
-      "price_eur": 120.44,
-      "images": [
-        "https://static.mercdn.net/item/detail/orig/photos/m65495172742_1.jpg?1782285529",
-        "https://static.mercdn.net/item/detail/orig/photos/m65495172742_2.jpg?1782285529",
-        "https://static.mercdn.net/item/detail/orig/photos/m65495172742_3.jpg?1782285529",
-        "https://static.mercdn.net/item/detail/orig/photos/m65495172742_4.jpg?1782285529",
-        "https://static.mercdn.net/item/detail/orig/photos/m65495172742_5.jpg?1782285529",
-        "https://static.mercdn.net/item/detail/orig/photos/m65495172742_6.jpg?1782285529",
-        "https://static.mercdn.net/item/detail/orig/photos/m65495172742_7.jpg?1782285529",
-        "https://static.mercdn.net/item/detail/orig/photos/m65495172742_8.jpg?1782285529",
-        "https://static.mercdn.net/item/detail/orig/photos/m65495172742_9.jpg?1782285529",
-        "https://static.mercdn.net/item/detail/orig/photos/m65495172742_10.jpg?1782285529",
-        "https://static.mercdn.net/item/detail/orig/photos/m65495172742_11.jpg?1782285529"
-      ],
-      "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.178374+00:00"
     },
     {
       "id": "mercari_m77937861251",
@@ -2272,22 +2168,22 @@
       "brand": "junya_watanabe",
       "brand_confidence": 0.95,
       "category_raw": "ジャケット・アウター",
-      "size_raw": "S",
-      "size_norm": "S",
-      "condition_raw": "目立った傷や汚れなし",
-      "condition_norm": "good",
-      "price_jpy": 34980,
-      "price_eur": 223.14,
+      "size_raw": null,
+      "size_norm": null,
+      "condition_raw": "やや傷や汚れあり",
+      "condition_norm": "fair",
+      "price_jpy": 19500,
+      "price_eur": 124.39,
       "images": [
-        "https://static.mercdn.net/item/detail/orig/photos/m74512177799_1.jpg?1784280833",
-        "https://static.mercdn.net/item/detail/orig/photos/m74512177799_2.jpg?1784280833",
-        "https://static.mercdn.net/item/detail/orig/photos/m74512177799_3.jpg?1784280833",
-        "https://static.mercdn.net/item/detail/orig/photos/m74512177799_4.jpg?1784280833",
-        "https://static.mercdn.net/item/detail/orig/photos/m74512177799_5.jpg?1784280833"
+        "https://static.mercdn.net/item/detail/orig/photos/m15927622394_1.jpg?1691834278",
+        "https://static.mercdn.net/item/detail/orig/photos/m15927622394_2.jpg?1691834278",
+        "https://static.mercdn.net/item/detail/orig/photos/m15927622394_3.jpg?1691834278",
+        "https://static.mercdn.net/item/detail/orig/photos/m15927622394_4.jpg?1691834278",
+        "https://static.mercdn.net/item/detail/orig/photos/m15927622394_5.jpg?1691834278"
       ],
       "status": "ITEM_STATUS_ON_SALE",
       "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.178879+00:00"
+      "normalized_at": "2026-08-04T09:04:09.178941+00:00"
     },
     {
       "id": "mercari_m79563267561",
@@ -2351,35 +2247,6 @@
       "status": "ITEM_STATUS_ON_SALE",
       "scraped_at": "2026-08-04T09:03:58.920769+00:00",
       "normalized_at": "2026-08-04T09:04:09.178927+00:00"
-    },
-    {
-      "id": "mercari_m15927622394",
-      "source": "mercari",
-      "source_item_id": "m15927622394",
-      "mercari_url": "https://jp.mercari.com/item/m15927622394",
-      "buyee_item_url": "https://buyee.jp/mercari/item/m15927622394?conversionType=Mercari_DirectSearch",
-      "listed_at": "2023-08-12T09:57:58",
-      "title_ja": "コムデギャルソン　ジュンヤワタナベマン",
-      "title_en": "Comme des Garçons Junya Watanabe MAN",
-      "brand": "junya_watanabe",
-      "brand_confidence": 0.95,
-      "category_raw": "ジャケット・アウター",
-      "size_raw": null,
-      "size_norm": null,
-      "condition_raw": "やや傷や汚れあり",
-      "condition_norm": "fair",
-      "price_jpy": 19500,
-      "price_eur": 124.39,
-      "images": [
-        "https://static.mercdn.net/item/detail/orig/photos/m15927622394_1.jpg?1691834278",
-        "https://static.mercdn.net/item/detail/orig/photos/m15927622394_2.jpg?1691834278",
-        "https://static.mercdn.net/item/detail/orig/photos/m15927622394_3.jpg?1691834278",
-        "https://static.mercdn.net/item/detail/orig/photos/m15927622394_4.jpg?1691834278",
-        "https://static.mercdn.net/item/detail/orig/photos/m15927622394_5.jpg?1691834278"
-      ],
-      "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.178941+00:00"
     },
     {
       "id": "mercari_m76885573206",
@@ -2759,8 +2626,8 @@
       "size_norm": "M",
       "condition_raw": "目立った傷や汚れなし",
       "condition_norm": "good",
-      "price_jpy": 15100,
-      "price_eur": 96.33,
+      "price_jpy": 11000,
+      "price_eur": 70.17,
       "images": [
         "https://static.mercdn.net/item/detail/orig/photos/m64607870471_1.jpg?1785064956",
         "https://static.mercdn.net/item/detail/orig/photos/m64607870471_2.jpg?1785064956",
@@ -2774,7 +2641,7 @@
       ],
       "status": "ITEM_STATUS_ON_SALE",
       "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.179136+00:00"
+      "normalized_at": "2026-08-04T09:04:09.179345+00:00"
     },
     {
       "id": "mercari_m86909649806",
@@ -3049,39 +2916,6 @@
       "status": "ITEM_STATUS_ON_SALE",
       "scraped_at": "2026-08-04T09:03:58.920769+00:00",
       "normalized_at": "2026-08-04T09:04:09.179324+00:00"
-    },
-    {
-      "id": "mercari_m64607870471",
-      "source": "mercari",
-      "source_item_id": "m64607870471",
-      "mercari_url": "https://jp.mercari.com/item/m64607870471",
-      "buyee_item_url": "https://buyee.jp/mercari/item/m64607870471?conversionType=Mercari_DirectSearch",
-      "listed_at": "2026-07-26T11:22:36",
-      "title_ja": "コムデギャルソンオムプリュス　半袖シャツ 切り替えデザイン総柄ドットAD2011",
-      "title_en": "Comme des Garçons Homme Plus Short-Sleeve Shirt with Panel Design and All-Over Polka Dot Print AD2011",
-      "brand": "cdg_homme_plus",
-      "brand_confidence": 0.95,
-      "category_raw": "トップス",
-      "size_raw": "M",
-      "size_norm": "M",
-      "condition_raw": "目立った傷や汚れなし",
-      "condition_norm": "good",
-      "price_jpy": 11000,
-      "price_eur": 70.17,
-      "images": [
-        "https://static.mercdn.net/item/detail/orig/photos/m64607870471_1.jpg?1785064956",
-        "https://static.mercdn.net/item/detail/orig/photos/m64607870471_2.jpg?1785064956",
-        "https://static.mercdn.net/item/detail/orig/photos/m64607870471_3.jpg?1785064956",
-        "https://static.mercdn.net/item/detail/orig/photos/m64607870471_4.jpg?1785064956",
-        "https://static.mercdn.net/item/detail/orig/photos/m64607870471_5.jpg?1785064956",
-        "https://static.mercdn.net/item/detail/orig/photos/m64607870471_6.jpg?1785064956",
-        "https://static.mercdn.net/item/detail/orig/photos/m64607870471_7.jpg?1785064956",
-        "https://static.mercdn.net/item/detail/orig/photos/m64607870471_8.jpg?1785064956",
-        "https://static.mercdn.net/item/detail/orig/photos/m64607870471_9.jpg?1785064956"
-      ],
-      "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.179345+00:00"
     },
     {
       "id": "mercari_m71452444103",
@@ -7288,13 +7122,13 @@
       "title_en": "UNDERCOVER Polka-dot Shirt, Layered Pants 3",
       "brand": "undercover",
       "brand_confidence": 0.95,
-      "category_raw": "トップス",
-      "size_raw": "L",
-      "size_norm": "L",
-      "condition_raw": "新品、未使用",
-      "condition_norm": "new",
-      "price_jpy": 2999,
-      "price_eur": 19.13,
+      "category_raw": "パンツ",
+      "size_raw": "サイズ: 3",
+      "size_norm": "3",
+      "condition_raw": "目立った傷や汚れなし",
+      "condition_norm": "good",
+      "price_jpy": 8500,
+      "price_eur": 54.22,
       "images": [
         "https://static.mercdn.net/item/detail/orig/photos/m12144758418_1.jpg?1785206591",
         "https://static.mercdn.net/item/detail/orig/photos/m12144758418_2.jpg?1785206591",
@@ -7303,7 +7137,7 @@
       ],
       "status": "ITEM_STATUS_ON_SALE",
       "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.181543+00:00"
+      "normalized_at": "2026-08-04T09:04:09.181999+00:00"
     },
     {
       "id": "mercari_m74609694841",
@@ -8233,34 +8067,6 @@
       "status": "ITEM_STATUS_ON_SALE",
       "scraped_at": "2026-08-04T09:03:58.920769+00:00",
       "normalized_at": "2026-08-04T09:04:09.181979+00:00"
-    },
-    {
-      "id": "mercari_m12144758418",
-      "source": "mercari",
-      "source_item_id": "m12144758418",
-      "mercari_url": "https://jp.mercari.com/item/m12144758418",
-      "buyee_item_url": "https://buyee.jp/mercari/item/m12144758418?conversionType=Mercari_DirectSearch",
-      "listed_at": "2026-07-28T02:43:11",
-      "title_ja": "UNDERCOVER ドット柄シャツレイヤードパンツ 3",
-      "title_en": "UNDERCOVER Polka-dot Shirt, Layered Pants 3",
-      "brand": "undercover",
-      "brand_confidence": 0.95,
-      "category_raw": "パンツ",
-      "size_raw": "サイズ: 3",
-      "size_norm": "3",
-      "condition_raw": "目立った傷や汚れなし",
-      "condition_norm": "good",
-      "price_jpy": 8500,
-      "price_eur": 54.22,
-      "images": [
-        "https://static.mercdn.net/item/detail/orig/photos/m12144758418_1.jpg?1785206591",
-        "https://static.mercdn.net/item/detail/orig/photos/m12144758418_2.jpg?1785206591",
-        "https://static.mercdn.net/item/detail/orig/photos/m12144758418_3.jpg?1785206591",
-        "https://static.mercdn.net/item/detail/orig/photos/m12144758418_4.jpg?1785206591"
-      ],
-      "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.181999+00:00"
     },
     {
       "id": "mercari_m64072800561",
@@ -11594,7 +11400,7 @@
       "buyee_item_url": "https://buyee.jp/mercari/item/m59792135036?conversionType=Mercari_DirectSearch",
       "listed_at": "2026-08-04T02:39:04",
       "title_ja": "【希少】ego tripping スタッズ お兄 パンク系LGB FUGA",
-      "title_en": "[rare] Ego Tripping Studs, Older Brother, Punk-Style LGB FUGA",
+      "title_en": "[rare] Ego Tripping Studs Older Brother Punk-Style LGB FUGA",
       "brand": "needs_review",
       "brand_confidence": 0.0,
       "category_raw": "パンツ",
@@ -11603,14 +11409,14 @@
       "condition_raw": "やや傷や汚れあり",
       "condition_norm": "fair",
       "price_jpy": 19800,
-      "price_eur": 116.41,
+      "price_eur": 126.31,
       "images": [
         "https://static.mercdn.net/item/detail/orig/photos/m59792135036_1.jpg?1785811144",
         "https://static.mercdn.net/item/detail/orig/photos/m59792135036_2.jpg?1785811144"
       ],
       "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T08:50:28.061797+00:00",
-      "normalized_at": "2026-08-04T08:50:31.279307+00:00"
+      "scraped_at": "2026-08-04T09:03:58.920769+00:00",
+      "normalized_at": "2026-08-04T09:04:09.183983+00:00"
     },
     {
       "id": "mercari_m13687889540",
@@ -11629,15 +11435,15 @@
       "condition_raw": "目立った傷や汚れなし",
       "condition_norm": "good",
       "price_jpy": 9800,
-      "price_eur": 57.62,
+      "price_eur": 62.52,
       "images": [
         "https://static.mercdn.net/item/detail/orig/photos/m13687889540_1.jpg?1783655623",
         "https://static.mercdn.net/item/detail/orig/photos/m13687889540_2.jpg?1783655623",
         "https://static.mercdn.net/item/detail/orig/photos/m13687889540_3.jpg?1783655623"
       ],
       "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T08:50:28.061797+00:00",
-      "normalized_at": "2026-08-04T08:50:31.279312+00:00"
+      "scraped_at": "2026-08-04T09:03:58.920769+00:00",
+      "normalized_at": "2026-08-04T09:04:09.185035+00:00"
     },
     {
       "id": "mercari_m34427254480",
@@ -11656,15 +11462,15 @@
       "condition_raw": "目立った傷や汚れなし",
       "condition_norm": "good",
       "price_jpy": 21000,
-      "price_eur": 123.47,
+      "price_eur": 133.96,
       "images": [
         "https://static.mercdn.net/item/detail/orig/photos/m34427254480_1.jpg?1785342436",
         "https://static.mercdn.net/item/detail/orig/photos/m34427254480_2.jpg?1785342436",
         "https://static.mercdn.net/item/detail/orig/photos/m34427254480_3.jpg?1785342436"
       ],
       "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T08:50:28.061797+00:00",
-      "normalized_at": "2026-08-04T08:50:31.279317+00:00"
+      "scraped_at": "2026-08-04T09:03:58.920769+00:00",
+      "normalized_at": "2026-08-04T09:04:09.183958+00:00"
     },
     {
       "id": "mercari_m27433763527",
@@ -11761,12 +11567,12 @@
       "brand": "lgb",
       "brand_confidence": 0.95,
       "category_raw": "トップス",
-      "size_raw": "M",
-      "size_norm": "M",
-      "condition_raw": "目立った傷や汚れなし",
-      "condition_norm": "good",
-      "price_jpy": 22000,
-      "price_eur": 140.34,
+      "size_raw": "L",
+      "size_norm": "L",
+      "condition_raw": "未使用に近い",
+      "condition_norm": "like_new",
+      "price_jpy": 11111,
+      "price_eur": 70.88,
       "images": [
         "https://static.mercdn.net/item/detail/orig/photos/m74502983256_1.jpg?1785014332",
         "https://static.mercdn.net/item/detail/orig/photos/m74502983256_2.jpg?1785014332",
@@ -11775,7 +11581,7 @@
       ],
       "status": "ITEM_STATUS_ON_SALE",
       "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.183930+00:00"
+      "normalized_at": "2026-08-04T09:04:09.184895+00:00"
     },
     {
       "id": "mercari_m99683162753",
@@ -11802,59 +11608,6 @@
       "status": "ITEM_STATUS_ON_SALE",
       "scraped_at": "2026-08-04T09:03:58.920769+00:00",
       "normalized_at": "2026-08-04T09:04:09.183950+00:00"
-    },
-    {
-      "id": "mercari_m34427254480",
-      "source": "mercari",
-      "source_item_id": "m34427254480",
-      "mercari_url": "https://jp.mercari.com/item/m34427254480",
-      "buyee_item_url": "https://buyee.jp/mercari/item/m34427254480?conversionType=Mercari_DirectSearch",
-      "listed_at": "2026-07-29T16:27:16",
-      "title_ja": "L.G.B. サルエルパンツ ブラック 30",
-      "title_en": "L.G.B. Harem Pants, Black, Size 30",
-      "brand": "needs_review",
-      "brand_confidence": 0.0,
-      "category_raw": "パンツ",
-      "size_raw": "L",
-      "size_norm": "L",
-      "condition_raw": "目立った傷や汚れなし",
-      "condition_norm": "good",
-      "price_jpy": 21000,
-      "price_eur": 133.96,
-      "images": [
-        "https://static.mercdn.net/item/detail/orig/photos/m34427254480_1.jpg?1785342436",
-        "https://static.mercdn.net/item/detail/orig/photos/m34427254480_2.jpg?1785342436",
-        "https://static.mercdn.net/item/detail/orig/photos/m34427254480_3.jpg?1785342436"
-      ],
-      "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.183958+00:00"
-    },
-    {
-      "id": "mercari_m59792135036",
-      "source": "mercari",
-      "source_item_id": "m59792135036",
-      "mercari_url": "https://jp.mercari.com/item/m59792135036",
-      "buyee_item_url": "https://buyee.jp/mercari/item/m59792135036?conversionType=Mercari_DirectSearch",
-      "listed_at": "2026-08-04T02:39:04",
-      "title_ja": "【希少】ego tripping スタッズ お兄 パンク系LGB FUGA",
-      "title_en": "[rare] Ego Tripping Studs Older Brother Punk-Style LGB FUGA",
-      "brand": "needs_review",
-      "brand_confidence": 0.0,
-      "category_raw": "パンツ",
-      "size_raw": null,
-      "size_norm": null,
-      "condition_raw": "やや傷や汚れあり",
-      "condition_norm": "fair",
-      "price_jpy": 19800,
-      "price_eur": 126.31,
-      "images": [
-        "https://static.mercdn.net/item/detail/orig/photos/m59792135036_1.jpg?1785811144",
-        "https://static.mercdn.net/item/detail/orig/photos/m59792135036_2.jpg?1785811144"
-      ],
-      "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.183983+00:00"
     },
     {
       "id": "mercari_m68268868172",
@@ -12047,18 +11800,17 @@
       "size_norm": null,
       "condition_raw": "目立った傷や汚れなし",
       "condition_norm": "good",
-      "price_jpy": 15000,
-      "price_eur": 95.69,
+      "price_jpy": 7000,
+      "price_eur": 44.65,
       "images": [
-        "https://static.mercdn.net/item/detail/orig/photos/m68539810018_1.jpg?1785588219",
-        "https://static.mercdn.net/item/detail/orig/photos/m68539810018_2.jpg?1785588219"
+        "https://static.mercdn.net/item/detail/orig/photos/m80586822473_1.jpg?1785734141"
       ],
       "status": "ITEM_STATUS_ON_SALE",
       "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.184024+00:00"
+      "normalized_at": "2026-08-04T09:04:09.185232+00:00"
     },
     {
-      "id": "mercari_m80963409219",
+      "id": "mercari_m31288630766",
       "source": "mercari",
       "source_item_id": "m31288630766",
       "mercari_url": "https://jp.mercari.com/item/m31288630766",
@@ -12074,7 +11826,7 @@
       "condition_raw": "未使用に近い",
       "condition_norm": "like_new",
       "price_jpy": 18000,
-      "price_eur": 114.83,
+      "price_eur": 105.83,
       "images": [
         "https://static.mercdn.net/item/detail/orig/photos/m31288630766_1.jpg?1785603170",
         "https://static.mercdn.net/item/detail/orig/photos/m31288630766_2.jpg?1785603170",
@@ -12082,8 +11834,8 @@
         "https://static.mercdn.net/item/detail/orig/photos/m31288630766_4.jpg?1785822404"
       ],
       "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.184038+00:00"
+      "scraped_at": "2026-08-04T08:50:28.061797+00:00",
+      "normalized_at": "2026-08-04T08:50:31.280178+00:00"
     },
     {
       "id": "mercari_m42478738173",
@@ -13209,15 +12961,15 @@
       "condition_raw": "未使用に近い",
       "condition_norm": "like_new",
       "price_jpy": 38000,
-      "price_eur": 242.41,
+      "price_eur": 223.42,
       "images": [
         "https://static.mercdn.net/item/detail/orig/photos/m46627636549_1.jpg?1785747235",
         "https://static.mercdn.net/item/detail/orig/photos/m46627636549_2.jpg?1785747235",
         "https://static.mercdn.net/item/detail/orig/photos/m46627636549_3.jpg?1785747235"
       ],
       "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.184794+00:00"
+      "scraped_at": "2026-08-04T08:50:28.061797+00:00",
+      "normalized_at": "2026-08-04T08:50:31.280152+00:00"
     },
     {
       "id": "mercari_m76725366040",
@@ -13407,34 +13159,6 @@
       "normalized_at": "2026-08-04T09:04:09.184879+00:00"
     },
     {
-      "id": "mercari_m74502983256",
-      "source": "mercari",
-      "source_item_id": "m74502983256",
-      "mercari_url": "https://jp.mercari.com/item/m74502983256",
-      "buyee_item_url": "https://buyee.jp/mercari/item/m74502983256?conversionType=Mercari_DirectSearch",
-      "listed_at": "2026-07-25T21:12:03",
-      "title_ja": "LGB ルグランブルー　タンクトップ　if six was nine hyde",
-      "title_en": "LGB Le Grand Bleu \"Share Spirit\" Tank Top by Hyde",
-      "brand": "lgb",
-      "brand_confidence": 0.95,
-      "category_raw": "トップス",
-      "size_raw": "L",
-      "size_norm": "L",
-      "condition_raw": "未使用に近い",
-      "condition_norm": "like_new",
-      "price_jpy": 11111,
-      "price_eur": 70.88,
-      "images": [
-        "https://static.mercdn.net/item/detail/orig/photos/m74502983256_1.jpg?1785014332",
-        "https://static.mercdn.net/item/detail/orig/photos/m74502983256_2.jpg?1785014332",
-        "https://static.mercdn.net/item/detail/orig/photos/m74502983256_3.jpg?1785013923",
-        "https://static.mercdn.net/item/detail/orig/photos/m74502983256_4.jpg?1785013923"
-      ],
-      "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.184895+00:00"
-    },
-    {
       "id": "mercari_m38936060149",
       "source": "mercari",
       "source_item_id": "m38936060149",
@@ -13603,33 +13327,6 @@
       "status": "ITEM_STATUS_ON_SALE",
       "scraped_at": "2026-08-04T09:03:58.920769+00:00",
       "normalized_at": "2026-08-04T09:04:09.185028+00:00"
-    },
-    {
-      "id": "mercari_m13687889540",
-      "source": "mercari",
-      "source_item_id": "m13687889540",
-      "mercari_url": "https://jp.mercari.com/item/m13687889540",
-      "buyee_item_url": "https://buyee.jp/mercari/item/m13687889540?conversionType=Mercari_DirectSearch",
-      "listed_at": "2026-07-10T03:53:43",
-      "title_ja": "L.G.B. タイダイ染め Tシャツ",
-      "title_en": "L.G.B. Tie-Dye T-Shirt",
-      "brand": "needs_review",
-      "brand_confidence": 0.0,
-      "category_raw": "トップス",
-      "size_raw": "L",
-      "size_norm": "L",
-      "condition_raw": "目立った傷や汚れなし",
-      "condition_norm": "good",
-      "price_jpy": 9800,
-      "price_eur": 62.52,
-      "images": [
-        "https://static.mercdn.net/item/detail/orig/photos/m13687889540_1.jpg?1783655623",
-        "https://static.mercdn.net/item/detail/orig/photos/m13687889540_2.jpg?1783655623",
-        "https://static.mercdn.net/item/detail/orig/photos/m13687889540_3.jpg?1783655623"
-      ],
-      "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.185035+00:00"
     },
     {
       "id": "mercari_m35646843230",
@@ -13984,31 +13681,6 @@
       "normalized_at": "2026-08-04T09:04:09.185201+00:00"
     },
     {
-      "id": "mercari_m80586822473",
-      "source": "mercari",
-      "source_item_id": "m80586822473",
-      "mercari_url": "https://jp.mercari.com/item/m80586822473",
-      "buyee_item_url": "https://buyee.jp/mercari/item/m80586822473?conversionType=Mercari_DirectSearch",
-      "listed_at": "2026-08-03T05:15:41",
-      "title_ja": "00s black food mods coat lgb kmrii",
-      "title_en": "00s Black Food Mods Coat LGB KMRI",
-      "brand": "needs_review",
-      "brand_confidence": 0.0,
-      "category_raw": "ジャケット・アウター",
-      "size_raw": null,
-      "size_norm": null,
-      "condition_raw": "目立った傷や汚れなし",
-      "condition_norm": "good",
-      "price_jpy": 7000,
-      "price_eur": 44.65,
-      "images": [
-        "https://static.mercdn.net/item/detail/orig/photos/m80586822473_1.jpg?1785734141"
-      ],
-      "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T09:03:58.920769+00:00",
-      "normalized_at": "2026-08-04T09:04:09.185232+00:00"
-    },
-    {
       "id": "mercari_m44037615588",
       "source": "mercari",
       "source_item_id": "m44037615588",
@@ -14298,33 +13970,6 @@
       "normalized_at": "2026-08-04T08:50:31.280146+00:00"
     },
     {
-      "id": "mercari_m46627636549",
-      "source": "mercari",
-      "source_item_id": "m46627636549",
-      "mercari_url": "https://jp.mercari.com/item/m46627636549",
-      "buyee_item_url": "https://buyee.jp/mercari/item/m46627636549?conversionType=Mercari_DirectSearch",
-      "listed_at": "2026-08-03T08:53:55",
-      "title_ja": "LGB ifsixwasnin　カットソー　黒　サイズ1　試着のみ",
-      "title_en": "LGB ifsixwasnin T-shirt, black, size 1—tried on only",
-      "brand": "needs_review",
-      "brand_confidence": 0.0,
-      "category_raw": "トップス",
-      "size_raw": "サイズ1",
-      "size_norm": "1",
-      "condition_raw": "未使用に近い",
-      "condition_norm": "like_new",
-      "price_jpy": 38000,
-      "price_eur": 223.42,
-      "images": [
-        "https://static.mercdn.net/item/detail/orig/photos/m46627636549_1.jpg?1785747235",
-        "https://static.mercdn.net/item/detail/orig/photos/m46627636549_2.jpg?1785747235",
-        "https://static.mercdn.net/item/detail/orig/photos/m46627636549_3.jpg?1785747235"
-      ],
-      "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T08:50:28.061797+00:00",
-      "normalized_at": "2026-08-04T08:50:31.280152+00:00"
-    },
-    {
       "id": "mercari_m10639267428",
       "source": "mercari",
       "source_item_id": "m10639267428",
@@ -14353,34 +13998,6 @@
       "status": "ITEM_STATUS_ON_SALE",
       "scraped_at": "2026-08-04T08:50:28.061797+00:00",
       "normalized_at": "2026-08-04T08:50:31.280168+00:00"
-    },
-    {
-      "id": "mercari_m31288630766",
-      "source": "mercari",
-      "source_item_id": "m31288630766",
-      "mercari_url": "https://jp.mercari.com/item/m31288630766",
-      "buyee_item_url": "https://buyee.jp/mercari/item/m31288630766?conversionType=Mercari_DirectSearch",
-      "listed_at": "2026-08-01T16:52:50",
-      "title_ja": "ルグランブルー　lgb 長袖シャツ",
-      "title_en": "Le Grand Bleu LGB Long-Sleeve Shirt",
-      "brand": "lgb",
-      "brand_confidence": 0.95,
-      "category_raw": "トップス",
-      "size_raw": "L",
-      "size_norm": "L",
-      "condition_raw": "未使用に近い",
-      "condition_norm": "like_new",
-      "price_jpy": 18000,
-      "price_eur": 105.83,
-      "images": [
-        "https://static.mercdn.net/item/detail/orig/photos/m31288630766_1.jpg?1785603170",
-        "https://static.mercdn.net/item/detail/orig/photos/m31288630766_2.jpg?1785603170",
-        "https://static.mercdn.net/item/detail/orig/photos/m31288630766_3.jpg?1785822404",
-        "https://static.mercdn.net/item/detail/orig/photos/m31288630766_4.jpg?1785822404"
-      ],
-      "status": "ITEM_STATUS_ON_SALE",
-      "scraped_at": "2026-08-04T08:50:28.061797+00:00",
-      "normalized_at": "2026-08-04T08:50:31.280178+00:00"
     },
     {
       "id": "mercari_m12839686839",
