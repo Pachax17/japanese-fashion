@@ -94,8 +94,8 @@ brands:
       # bare 'lgb' as substring would catch 'lgbt' — word-boundary regex instead:
       weak: ["エルジービー", "re:\\blgb\\b"]
       negative: []
-    mercari_brand_names: ["LGB"]
-    mercari_brand_ids: [4371]
+    mercari_brand_names: ["LGB", "L.G.B."]  # Mercari has BOTH brand entries (ids 4371 / 3848)
+    mercari_brand_ids: [4371, 3848]
 
   tornado_mart:
     display: Tornado Mart
