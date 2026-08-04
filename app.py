@@ -77,6 +77,36 @@ def _conn() -> sqlite3.Connection:
     return conn
 
 
+# --- Persistent click log (Neon Postgres) — [AUDIT A2] -----------------------
+# Render's free-tier disk is wiped on every deploy, so the SQLite clicks table
+# died 4x/day. If DATABASE_URL is set, clicks ALSO go to Postgres (with the
+# redirect destination, which SQLite never captured). Best-effort by design:
+# a dead DB must never block a user's redirect.
+DATABASE_URL = os.environ.get("DATABASE_URL", "")
+_CLICKS_DDL = ("CREATE TABLE IF NOT EXISTS clicks (id BIGSERIAL PRIMARY KEY, "
+               "listing_id TEXT, brand TEXT, dest TEXT, ts TIMESTAMPTZ DEFAULT now())")
+_clicks_ready = False
+
+
+def _log_click_persistent(listing_id: str, brand: str | None, dest: str) -> None:
+    global _clicks_ready
+    if not DATABASE_URL:
+        return
+    try:
+        import psycopg
+        with psycopg.connect(DATABASE_URL, connect_timeout=3) as conn:
+            if not _clicks_ready:
+                conn.execute(_CLICKS_DDL)
+                _clicks_ready = True
+            conn.execute(
+                "INSERT INTO clicks (listing_id, brand, dest) VALUES (%s, %s, %s)",
+                (listing_id, brand, dest),
+            )
+            conn.commit()
+    except Exception as e:  # noqa: BLE001
+        print(f"[clicks] persistent log failed (non-blocking): {e}")
+
+
 def age_bucket(listed_at_iso: str | None) -> tuple[str, bool]:
     """Return (readable age, is_new) where is_new = True if <1 day old."""
     if not listed_at_iso:
@@ -235,6 +265,7 @@ def go(id):
     )
     conn.commit()
     conn.close()
+    _log_click_persistent(id, row["brand"], dest)  # [AUDIT A2] survives deploys
     return redirect(url, code=302)
 
 
