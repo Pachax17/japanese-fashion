@@ -1,17 +1,17 @@
-name: Daily catalog refresh
+name: Catalog refresh
 
 # Re-scrapes Mercari, re-runs the pipeline, and commits the new seed
 # (data/listings_matched.json). The push triggers Render to redeploy.
 on:
   schedule:
-    - cron: "0 3 * * *"   # 03:00 UTC every day
+    - cron: "0 */6 * * *"  # every 6 hours: 00:00, 06:00, 12:00, 18:00 UTC
   workflow_dispatch: {}    # ...and a manual "Run workflow" button
 
 permissions:
   contents: write          # allow the job to push the refreshed seed
 
 concurrency:               # never run two refreshes at once
-  group: daily-refresh
+  group: catalog-refresh
   cancel-in-progress: false
 
 jobs:
@@ -59,7 +59,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No catalog changes — nothing to commit."
           else
-            git commit -m "chore: daily catalog refresh"
+            git commit -m "chore: catalog refresh"
             # The remote may have advanced since checkout (a manual push, etc.).
             # Integrate it first; the seed is the only file we touch, so on the
             # (rare) conflict favour our freshly-generated version. NB: in a rebase
