@@ -37,6 +37,10 @@ jobs:
       - name: Run pipeline (scrape -> parse -> match -> translate)
         env:
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+          # TEMPORARY: DeepL monthly quota exhausted. Standby mode = reuse cached
+          # translations, leave new items untranslated (UI falls back to JA title),
+          # never fail the run. Remove this line when the quota resets.
+          TRANSLATION_DISABLED: "1"
         run: |
           python scrape.py
           python parse.py
