@@ -15,6 +15,8 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
+from parse import normalize_category  # fallback for seeds predating category_norm
+
 DATA_DIR = Path(__file__).parent / "data"
 IN_PATH = DATA_DIR / "listings_matched.json"
 DB_PATH = DATA_DIR / "listings.db"
@@ -31,6 +33,7 @@ CREATE TABLE IF NOT EXISTS listings (
     mercari_brand_id   INTEGER,   -- [AUDIT B] seller-picked structured brand
     mercari_brand_name TEXT,
     category_raw     TEXT,
+    category_norm    TEXT,          -- garment type (T-shirt / Jacket / Pants…)
     size_raw         TEXT,
     size_norm        TEXT,
     condition_raw    TEXT,
@@ -55,13 +58,13 @@ UPSERT = """
 INSERT INTO listings (
     id, source, source_item_id, title_ja, title_en, brand, brand_confidence,
     mercari_brand_id, mercari_brand_name,
-    category_raw, size_raw, size_norm, condition_raw, condition_norm,
+    category_raw, category_norm, size_raw, size_norm, condition_raw, condition_norm,
     price_jpy, price_eur, images, mercari_url, buyee_item_url, listed_at, status,
     scraped_at, first_seen_at, last_seen_at
 ) VALUES (
     :id, :source, :source_item_id, :title_ja, :title_en, :brand, :brand_confidence,
     :mercari_brand_id, :mercari_brand_name,
-    :category_raw, :size_raw, :size_norm, :condition_raw, :condition_norm,
+    :category_raw, :category_norm, :size_raw, :size_norm, :condition_raw, :condition_norm,
     :price_jpy, :price_eur, :images, :mercari_url, :buyee_item_url, :listed_at, :status,
     :scraped_at, :now, :now
 )
@@ -70,7 +73,8 @@ ON CONFLICT(id) DO UPDATE SET
     brand=excluded.brand, brand_confidence=excluded.brand_confidence,
     mercari_brand_id=excluded.mercari_brand_id,
     mercari_brand_name=excluded.mercari_brand_name,
-    category_raw=excluded.category_raw, size_raw=excluded.size_raw,
+    category_raw=excluded.category_raw, category_norm=excluded.category_norm,
+    size_raw=excluded.size_raw,
     size_norm=excluded.size_norm, condition_raw=excluded.condition_raw,
     condition_norm=excluded.condition_norm, price_jpy=excluded.price_jpy,
     price_eur=excluded.price_eur, images=excluded.images,
@@ -98,6 +102,8 @@ def to_row(x: dict, now: str) -> dict:
         "mercari_brand_id": x.get("mercari_brand_id"),
         "mercari_brand_name": x.get("mercari_brand_name"),
         "category_raw": x.get("category_raw"),
+        "category_norm": x.get("category_norm")
+                          or normalize_category(x.get("category_raw"), x.get("title_ja")),
         "size_raw": x.get("size_raw"),
         "size_norm": x.get("size_norm"),
         "condition_raw": x.get("condition_raw"),
@@ -140,6 +146,7 @@ def main() -> None:
         for stmt in (
             "ALTER TABLE listings ADD COLUMN mercari_brand_id INTEGER",
             "ALTER TABLE listings ADD COLUMN mercari_brand_name TEXT",
+            "ALTER TABLE listings ADD COLUMN category_norm TEXT",
         ):
             try:
                 conn.execute(stmt)

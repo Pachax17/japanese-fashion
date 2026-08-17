@@ -67,14 +67,17 @@
 
       <div class="specs">
         <div><span class="k">Brand</span><span>{{ it.brand_display }}</span></div>
+        {% if it.category_norm %}<div><span class="k">Category</span><span>{{ it.category_norm }}</span></div>{% endif %}
         <div><span class="k">Size</span><span>{{ it.size_norm or it.size_raw or '—' }}</span></div>
         <div><span class="k">Condition</span><span>{{ it.condition_label or '—' }}</span></div>
-        <div><span class="k">Listed</span><span>{{ it.age_label }}</span></div>
+        <div><span class="k">Listed</span><span>{% if it.listed_date %}{{ it.listed_date }} · {% endif %}{{ it.age_label }}</span></div>
         <div><span class="k">Status</span><span>{{ 'Available' if it.status == 'active' else 'Sold' }}</span></div>
       </div>
 
-      <a class="buy" href="/go/{{ it.id }}" target="_blank" rel="noopener">View on Mercari →</a>
-      <a class="buy-alt" href="/go/{{ it.id }}?to=buyee" target="_blank" rel="noopener">or buy via Buyee (proxy) →</a>
+      <a class="buy" href="/go/{{ it.id }}" target="_blank" rel="noopener" data-track="Outbound Click"
+         data-brand="{{ it.brand }}" data-category="{{ it.category_norm or 'unknown' }}" data-dest="mercari">View on Mercari →</a>
+      <a class="buy-alt" href="/go/{{ it.id }}?to=buyee" target="_blank" rel="noopener" data-track="Outbound Click"
+         data-brand="{{ it.brand }}" data-category="{{ it.category_norm or 'unknown' }}" data-dest="buyee">or buy via Buyee (proxy) →</a>
       <div class="note">Buy on Mercari with your own proxy, or via Buyee — I just reorganise the listings.</div>
 
       {% if it.title_ja and it.title_ja != it.title_en %}
@@ -82,6 +85,23 @@
       {% endif %}
     </div>
   </div>
+  <script>
+    // Enriched pageview + click events (brand/category), no extra navigation.
+    if (typeof plausible === 'function') {
+      plausible('Item Detail', { props: {
+        brand: '{{ it.brand }}', category: '{{ it.category_norm or "unknown" }}'
+      }});
+    }
+    document.addEventListener('click', function (e) {
+      const el = e.target.closest('[data-track]');
+      if (!el || typeof plausible !== 'function') return;
+      plausible(el.dataset.track, { props: {
+        brand: el.dataset.brand || 'unknown',
+        category: el.dataset.category || 'unknown',
+        dest: el.dataset.dest || 'internal'
+      }});
+    }, true);
+  </script>
   {% if analytics_token %}<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "{{ analytics_token }}"}'></script>{% endif %}
 </body>
 </html>

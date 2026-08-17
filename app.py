@@ -137,6 +137,14 @@ def _decorate(row: sqlite3.Row) -> dict:
     d["brand_display"] = DISPLAY.get(d["brand"], d["brand"])
     d["condition_label"] = CONDITION_LABEL.get(d["condition_norm"], d["condition_norm"] or "")
     d["age_label"], d["is_new"] = age_bucket(d.get("listed_at"))
+    d["listed_date"] = ""  # human date shown on the detail page (PO request 2026-08-05)
+    if d.get("listed_at"):
+        try:
+            d["listed_date"] = datetime.fromisoformat(
+                d["listed_at"].replace("Z", "+00:00")
+            ).strftime("%-d %b %Y")
+        except Exception:  # noqa: BLE001
+            pass
     return d
 
 
@@ -148,11 +156,14 @@ SORTS = {
 
 
 def query_listings(brand=None, size=None, condition=None,
-                   sort="new", price_min=None, price_max=None) -> list[dict]:
+                   sort="new", price_min=None, price_max=None,
+                   category=None) -> list[dict]:
     sql = f"SELECT * FROM listings WHERE status='active' AND brand IN ({_PH})"
     params = list(SHOWN_BRANDS)
     if brand in DISPLAY:
         sql += " AND brand = ?"; params.append(brand)
+    if category:
+        sql += " AND category_norm = ?"; params.append(category)
     if size:
         sql += " AND size_norm = ?"; params.append(size)
     if condition:
@@ -189,10 +200,27 @@ def filter_options() -> dict[str, list[str]]:
     conds = [r[0] for r in conn.execute(
         f"SELECT DISTINCT condition_norm FROM listings WHERE status='active' "
         f"AND brand IN ({_PH}) AND condition_norm IS NOT NULL", SHOWN_BRANDS)]
+    cats = conn.execute(
+        f"SELECT category_norm, COUNT(*) FROM listings WHERE status='active' "
+        f"AND brand IN ({_PH}) AND category_norm IS NOT NULL "
+        f"GROUP BY category_norm ORDER BY COUNT(*) DESC", SHOWN_BRANDS).fetchall()
     conn.close()
-    sizes.sort(key=lambda s: (SIZE_ORDER.index(s) if s in SIZE_ORDER else len(SIZE_ORDER), s))
+
+    # Sizes grouped by garment area (PO request: tops/bottoms were all mixed).
+    letters = sorted([s for s in sizes if s in SIZE_ORDER], key=SIZE_ORDER.index)
+    waist = sorted([s for s in sizes if s.startswith("W")],
+                   key=lambda s: int(s[1:]) if s[1:].isdigit() else 999)
+    numeric = sorted([s for s in sizes if s not in SIZE_ORDER and not s.startswith("W")])
+    size_groups = [g for g in (("Tops & general", letters),
+                               ("Waist — bottoms", waist),
+                               ("JP / EU numeric", numeric)) if g[1]]
+
     conds.sort(key=lambda c: CONDITION_ORDER.index(c) if c in CONDITION_ORDER else 99)
-    return {"sizes": sizes, "conditions": [(c, CONDITION_LABEL.get(c, c)) for c in conds]}
+    return {
+        "size_groups": size_groups,
+        "categories": [(c, n) for c, n in cats],
+        "conditions": [(c, CONDITION_LABEL.get(c, c)) for c in conds],
+    }
 
 
 def _to_int(v):
@@ -210,17 +238,21 @@ def index():
     sort = request.args.get("sort") or "new"
     if sort not in SORTS:
         sort = "new"
+    category = request.args.get("category") or None
     price_min = _to_int(request.args.get("price_min"))
     price_max = _to_int(request.args.get("price_max"))
-    items = query_listings(brand, size, condition, sort, price_min, price_max)
+    items = query_listings(brand, size, condition, sort, price_min, price_max, category)
+    counts = brand_counts()
     return render_template(
         "index.html",
         items=items,
-        counts=brand_counts(),
-        total=sum(brand_counts().values()),
+        counts=counts,
+        total=sum(counts.values()),
+        brands_available=sum(1 for n in counts.values() if n > 0),
         options=filter_options(),
         display=DISPLAY,
         active_brand=brand if brand in DISPLAY else None,
+        active_category=category,
         active_size=size,
         active_condition=condition,
         active_sort=sort,

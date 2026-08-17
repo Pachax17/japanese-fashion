@@ -44,6 +44,46 @@ CLOTHING_MARKERS = (
     "スカート", "ワンピース",  # womenswear clothing (e.g. Pleats Please)
 )
 
+# --- Garment-type normalization (for the site's category filter) ------------
+#   Ordered, first match wins: Tシャツ MUST precede シャツ, ハーフパンツ precede パンツ.
+CATEGORY_MAP = [
+    ("Tシャツ", "T-shirt"), ("カットソー", "T-shirt"),
+    ("パーカー", "Hoodie"), ("スウェット", "Sweatshirt"), ("トレーナー", "Sweatshirt"),
+    ("カーディガン", "Cardigan"), ("ニット", "Knit"), ("セーター", "Knit"),
+    ("タンクトップ", "Top"), ("キャミソール", "Top"),
+    ("ポロシャツ", "Shirt"), ("ブラウス", "Shirt"), ("シャツ", "Shirt"),
+    ("テーラードジャケット", "Jacket"), ("ライダース", "Jacket"), ("Gジャン", "Jacket"),
+    ("ブルゾン", "Jacket"), ("ジャケット", "Jacket"),
+    ("トレンチ", "Coat"), ("コート", "Coat"), ("ダウン", "Coat"),
+    ("ベスト", "Vest"),
+    ("デニム", "Denim"), ("ジーンズ", "Denim"),
+    ("ハーフパンツ", "Shorts"), ("ショートパンツ", "Shorts"), ("短パン", "Shorts"),
+    ("スラックス", "Pants"), ("チノパン", "Pants"), ("パンツ", "Pants"), ("ズボン", "Pants"),
+    ("スカート", "Skirt"), ("ワンピース", "Dress"), ("ドレス", "Dress"),
+    ("セットアップ", "Suit"), ("スーツ", "Suit"),
+    ("アウター", "Jacket"), ("トップス", "Top"),
+]
+
+
+def normalize_category(category_raw: str | None, title: str | None = None) -> str | None:
+    """Map to an EN garment type. Mercari's category is often just the PARENT
+    ('トップス' = all tops) — when the result is coarse, refine from the title,
+    where sellers almost always name the garment (Tシャツ, シャツ, ニット…)."""
+    coarse = None
+    if category_raw:
+        for marker, label in CATEGORY_MAP:
+            if marker in category_raw:
+                coarse = label
+                break
+        else:
+            coarse = "Other"
+    if coarse in (None, "Top", "Other") and title:
+        for marker, label in CATEGORY_MAP:
+            if marker in title:
+                return label
+    return coarse
+
+
 # --- Only regular Mercari listings (id = 'm' + 11 digits) -------------------
 #   "Mercari Shops" items use 22-char IDs, fail full_item enrichment, and don't
 #   map to a buyee.jp/item/mercari/m... URL -> their redirect would be dead.
@@ -100,6 +140,7 @@ def normalize(raw: dict, scraped_at: str, fx_rate: float) -> dict:
         "mercari_brand_id": raw.get("mercari_brand_id"),      # [AUDIT B] structured seller tag
         "mercari_brand_name": raw.get("mercari_brand_name"),
         "category_raw": raw.get("category_raw"),
+        "category_norm": normalize_category(raw.get("category_raw"), title),
         "size_raw": size_raw,
         "size_norm": size_norm,
         "condition_raw": cond_raw,
