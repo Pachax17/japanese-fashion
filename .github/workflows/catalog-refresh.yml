@@ -17,7 +17,7 @@ concurrency:               # never run two refreshes at once
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 50   # 15 brands × cap 150 × politeness delay ≈ 30-35 min of scrape
     steps:
       - uses: actions/checkout@v5
 

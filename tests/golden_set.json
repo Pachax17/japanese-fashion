@@ -432,5 +432,30 @@
   "title": "オムプリュス HOMME DEUX 併売 ジャケット",
   "expected": "needs_review",
   "_why": "les deux lignes citées = ambigu -> négatifs mutuels"
+ },
+ {
+  "title": "ヨウジヤマモト プールオム ウールギャバ ジャケット",
+  "expected": "yohji_yamamoto"
+ },
+ {
+  "title": "Y-3 ワイスリー トラックジャケット adidas",
+  "expected": "needs_review",
+  "_why": "garde-fou : Y-3 exclu du mainline Yohji"
+ },
+ {
+  "title": "KAPITAL キャピタル 刺し子 デニムジャケット",
+  "expected": "kapital"
+ },
+ {
+  "title": "mastermind JAPAN スカル スウェット",
+  "expected": "mastermind"
+ },
+ {
+  "title": "ミュウミュウ レザー ハンドバッグ アーカイブ",
+  "expected": "miu_miu"
+ },
+ {
+  "title": "ANN DEMEULEMEESTER レイヤード シャツ 白",
+  "expected": "ann_demeulemeester"
  }
 ]

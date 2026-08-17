@@ -68,15 +68,25 @@
       <option value="price_asc" {{ 'selected' if active_sort == 'price_asc' }}>Price: low → high</option>
     </select>
     <select name="brand" onchange="this.form.submit()">
-      <option value="">All brands ({{ total }})</option>
+      <option value="">All brands ({{ brands_available }} brands · {{ total }} items)</option>
       {% for key, name in display.items() %}
         <option value="{{ key }}" {{ 'selected' if active_brand == key }}>{{ name }} ({{ counts[key] }})</option>
       {% endfor %}
     </select>
+    <select name="category" onchange="this.form.submit()">
+      <option value="">All categories</option>
+      {% for c, n in options.categories %}
+        <option value="{{ c }}" {{ 'selected' if active_category == c }}>{{ c }} ({{ n }})</option>
+      {% endfor %}
+    </select>
     <select name="size" onchange="this.form.submit()">
       <option value="">All sizes</option>
-      {% for s in options.sizes %}
-        <option value="{{ s }}" {{ 'selected' if active_size == s }}>{{ s }}</option>
+      {% for group, sizes in options.size_groups %}
+        <optgroup label="{{ group }}">
+          {% for s in sizes %}
+            <option value="{{ s }}" {{ 'selected' if active_size == s }}>{{ s }}</option>
+          {% endfor %}
+        </optgroup>
       {% endfor %}
     </select>
     <select name="condition" onchange="this.form.submit()">
@@ -87,13 +97,14 @@
     </select>
     <input type="number" name="price_min" min="0" placeholder="€ min" value="{{ price_min if price_min is not none else '' }}" onchange="this.form.submit()">
     <input type="number" name="price_max" min="0" placeholder="€ max" value="{{ price_max if price_max is not none else '' }}" onchange="this.form.submit()">
-    {% if active_brand or active_size or active_condition or price_min is not none or price_max is not none or active_sort != 'new' %}<a class="clear" href="/">Clear</a>{% endif %}
+    {% if active_brand or active_category or active_size or active_condition or price_min is not none or price_max is not none or active_sort != 'new' %}<a class="clear" href="/">Clear</a>{% endif %}
   </form>
 
   <div class="grid">
     {% for it in items %}
       <article class="card">
-        <a class="lnk" href="/item/{{ it.id }}">
+        <a class="lnk" href="/item/{{ it.id }}" data-track="Item View"
+           data-brand="{{ it.brand }}" data-category="{{ it.category_norm or 'unknown' }}">
           <div class="ph">
             {% if it.image %}<img src="{{ it.image }}" alt="" loading="lazy">{% endif %}
             {% if it.condition_label %}<span class="cond">{{ it.condition_label }}</span>{% endif %}
@@ -101,12 +112,13 @@
           </div>
           <div class="brand">{{ it.brand_display }}</div>
           <p class="title">{{ it.title_en or it.title_ja }}</p>
-          <div class="meta">{% if it.size_norm %}Size {{ it.size_norm }}{% else %}&nbsp;{% endif %}</div>
+          <div class="meta">{% if it.category_norm %}{{ it.category_norm }}{% endif %}{% if it.category_norm and it.size_norm %} · {% endif %}{% if it.size_norm %}Size {{ it.size_norm }}{% endif %}{% if not it.category_norm and not it.size_norm %}&nbsp;{% endif %}</div>
           <div class="price">€{{ '%.2f'|format(it.price_eur) if it.price_eur else '—' }}
             <span class="jpy">¥{{ '{:,}'.format(it.price_jpy) if it.price_jpy else '' }}</span>
           </div>
         </a>
-        <a class="btn" href="/go/{{ it.id }}" target="_blank" rel="noopener">View on Mercari →</a>
+        <a class="btn" href="/go/{{ it.id }}" target="_blank" rel="noopener" data-track="Outbound Click"
+           data-brand="{{ it.brand }}" data-category="{{ it.category_norm or 'unknown' }}" data-dest="mercari">View on Mercari →</a>
       </article>
     {% else %}
       <p>No listings match these filters.</p>
@@ -114,6 +126,19 @@
   </div>
 
   <footer>Reorganised Mercari Japan listings · I don't sell, I redirect.</footer>
+  <script>
+    // Plausible custom events: brand/category/destination on every click,
+    // without any extra page load. [PO request 2026-08-05]
+    document.addEventListener('click', function (e) {
+      const el = e.target.closest('[data-track]');
+      if (!el || typeof plausible !== 'function') return;
+      plausible(el.dataset.track, { props: {
+        brand: el.dataset.brand || 'unknown',
+        category: el.dataset.category || 'unknown',
+        dest: el.dataset.dest || 'internal'
+      }});
+    }, true);
+  </script>
   {% if analytics_token %}<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "{{ analytics_token }}"}'></script>{% endif %}
 </body>
 </html>

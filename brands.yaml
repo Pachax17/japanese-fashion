@@ -54,6 +54,11 @@ priority:
   - lgb
   - tornado_mart
   - pleats_please
+  - yohji_yamamoto
+  - kapital
+  - mastermind
+  - miu_miu
+  - ann_demeulemeester
 
 brands:
   # --- CdG / Junya (menswear lines) ---
@@ -171,5 +176,58 @@ brands:
       negative: ["オムプリッセ", "HOMME PLISSE", "プリッセ"]
     mercari_brand_names: []
 
+  # --- Batch 2026-08-05 (PO request) ---
+  yohji_yamamoto:
+    display: Yohji Yamamoto
+    search_keywords: ["ヨウジヤマモト", "YOHJI YAMAMOTO"]
+    exclude: ["ワイスリー", "Y-3"]
+    match:
+      strong: ["ヨウジヤマモト", "YOHJI YAMAMOTO"]
+      weak: ["ヨウジ"]
+      # Y-3 (adidas, mass) et Y's (ligne séparée) polluent — exclus du mainline/Pour Homme
+      negative: ["ワイスリー", "Y-3", "Y3", "ワイズ"]
+    mercari_brand_names: ["Yohji Yamamoto", "Yohji Yamamoto POUR HOMME"]  # à confirmer par récolte
+
+  kapital:
+    display: Kapital
+    search_keywords: ["キャピタル", "KAPITAL"]
+    exclude: []
+    match:
+      # 'KAPITAL' avec K = distinctif (pas le mot anglais 'capital')
+      strong: ["キャピタル", "KAPITAL"]
+      weak: []
+      negative: []
+    mercari_brand_names: ["KAPITAL"]  # à confirmer par récolte
+
+  mastermind:
+    display: Mastermind Japan
+    search_keywords: ["マスターマインド", "mastermind JAPAN"]
+    exclude: []
+    match:
+      strong: ["マスターマインド", "MASTERMIND"]
+      weak: []
+      negative: []
+    mercari_brand_names: ["mastermind JAPAN", "mastermind"]  # à confirmer par récolte
+
+  miu_miu:
+    display: Miu Miu
+    search_keywords: ["ミュウミュウ", "miumiu"]
+    exclude: []
+    match:
+      strong: ["ミュウミュウ", "MIU MIU", "MIUMIU"]
+      weak: []
+      negative: []
+    mercari_brand_names: ["miumiu"]  # à confirmer par récolte
+
+  ann_demeulemeester:
+    display: Ann Demeulemeester
+    search_keywords: ["アンドゥムルメステール", "ANN DEMEULEMEESTER"]
+    exclude: []
+    match:
+      strong: ["アンドゥムルメステール", "ANN DEMEULEMEESTER"]
+      weak: ["ドゥムルメステール", "DEMEULEMEESTER"]  # orthographes partielles fréquentes
+      negative: []
+    mercari_brand_names: ["Ann Demeulemeester"]  # à confirmer par récolte
+
   # TODO: add more brands here — one YAML block, no code change needed.
-  # Candidates: Yohji Yamamoto, Issey Miyake mainline, Kapital, Visvim, Margiela…
+  # Candidates: Issey Miyake mainline, Visvim, Margiela, IF SIX WAS NINE, Goa (cf. foreign_brands)…
