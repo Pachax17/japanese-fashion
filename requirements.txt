@@ -5,3 +5,4 @@ PyYAML>=6.0          # read fashion_glossary.yaml
 Flask>=3.0           # grid web page (slice #6)
 gunicorn>=21.0       # production WSGI server (deploy)
 psycopg[binary]>=3.2 # Neon Postgres: clicks + listing history [AUDIT A2]
+requests>=2.32       # Brevo HTTPS mail API (PaaS block outbound SMTP ports)

@@ -61,6 +61,7 @@ jobs:
         # saved search. Missing secrets -> silent no-op. Never fails the pipeline.
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}   # preferred transport (HTTPS)
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           SMTP_USER: ${{ secrets.SMTP_USER }}

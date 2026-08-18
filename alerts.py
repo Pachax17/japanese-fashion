@@ -10,8 +10,9 @@ matching listings. GDPR by design:
   - one-click unsubscribe link in EVERY email -> immediate row deletion;
   - retention: unconfirmed signups are purged after 7 days.
 
-Env-gated: needs DATABASE_URL + SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASSWORD
-/MAIL_FROM (any missing -> silent no-op). Never fails the pipeline.
+Env-gated: needs DATABASE_URL + MAIL_FROM + a transport — either BREVO_API_KEY
+(preferred: HTTPS, works everywhere) or the SMTP_* set. Anything missing ->
+silent no-op. Never fails the pipeline.
 
 Run: python alerts.py   (CI: after history.py, so lifecycle first_seen_at is fresh)
 """
@@ -31,6 +32,12 @@ SEED = HERE / "data" / "listings_matched.json"
 
 load_dotenv(HERE / ".env")
 DATABASE_URL = os.getenv("DATABASE_URL")
+# Preferred transport: Brevo's HTTPS API. Render (and most PaaS free tiers)
+# BLOCK outbound SMTP ports 25/465/587 as an anti-spam measure — the web app's
+# confirmation emails timed out at TCP connect. Port 443 is never blocked.
+BREVO_API_KEY = os.getenv("BREVO_API_KEY")
+BREVO_API_URL = "https://api.brevo.com/v3/smtp/email"
+# Fallback transport: plain SMTP (works fine from GitHub Actions).
 SMTP_HOST = os.getenv("SMTP_HOST")
 SMTP_PORT = int(os.getenv("SMTP_PORT") or 587)
 SMTP_USER = os.getenv("SMTP_USER")
@@ -55,10 +62,30 @@ ALERTS_DDL = """CREATE TABLE IF NOT EXISTS alerts (
 
 
 def smtp_ready() -> bool:
-    return all((SMTP_HOST, SMTP_USER, SMTP_PASSWORD, MAIL_FROM))
+    """True if ANY mail transport is usable (API preferred, SMTP fallback)."""
+    if not MAIL_FROM:
+        return False
+    return bool(BREVO_API_KEY) or all((SMTP_HOST, SMTP_USER, SMTP_PASSWORD))
 
 
-def send_email(to_addr: str, subject: str, body: str) -> None:
+def _send_via_api(to_addr: str, subject: str, body: str) -> None:
+    import requests
+    r = requests.post(
+        BREVO_API_URL,
+        headers={"api-key": BREVO_API_KEY, "accept": "application/json"},
+        json={
+            "sender": {"email": MAIL_FROM},
+            "to": [{"email": to_addr}],
+            "subject": subject,
+            "textContent": body,
+        },
+        timeout=15,
+    )
+    if r.status_code >= 300:
+        raise RuntimeError(f"Brevo API {r.status_code}: {r.text[:300]}")
+
+
+def _send_via_smtp(to_addr: str, subject: str, body: str) -> None:
     msg = EmailMessage()
     msg["From"] = MAIL_FROM
     msg["To"] = to_addr
@@ -68,6 +95,14 @@ def send_email(to_addr: str, subject: str, body: str) -> None:
         s.starttls()
         s.login(SMTP_USER, SMTP_PASSWORD)
         s.send_message(msg)
+
+
+def send_email(to_addr: str, subject: str, body: str) -> None:
+    """Send over the HTTPS API when a key is configured, else fall back to SMTP."""
+    if BREVO_API_KEY:
+        _send_via_api(to_addr, subject, body)
+    else:
+        _send_via_smtp(to_addr, subject, body)
 
 
 def criteria_match(alert: dict, listing: dict) -> bool:
@@ -118,8 +153,9 @@ def digest_body(alert: dict, items: list[dict]) -> str:
 
 def main() -> None:
     if not DATABASE_URL or not smtp_ready():
-        print("[alerts] DATABASE_URL/SMTP not fully configured — skipping (no-op).")
+        print("[alerts] DATABASE_URL / mail transport not fully configured — skipping (no-op).")
         return
+    print(f"[alerts] transport: {'Brevo HTTPS API' if BREVO_API_KEY else 'SMTP'}")
     import psycopg
     from psycopg.rows import dict_row
 
