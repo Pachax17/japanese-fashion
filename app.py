@@ -125,7 +125,9 @@ def _msg(text: str, code: int = 200):
 
 def _pg():
     import psycopg
-    return psycopg.connect(DATABASE_URL, connect_timeout=5)
+    # 15s, not 5: Neon's serverless compute auto-suspends when idle and a cold
+    # wake-up can take several seconds.
+    return psycopg.connect(DATABASE_URL, connect_timeout=15)
 
 
 @app.route("/alerts", methods=["POST"])
@@ -151,6 +153,7 @@ def alerts_create():
     if price_max is not None and not (1 <= price_max <= 100_000):
         price_max = None
     token = _secrets.token_urlsafe(32)
+    # Step 1 — store the (unconfirmed) alert.
     try:
         with _pg() as conn:
             conn.execute(ALERTS_DDL)
@@ -164,8 +167,16 @@ def alerts_create():
                 "price_max_eur, token) VALUES (%s,%s,%s,%s,%s,%s)",
                 (email, brand, category, size, price_max, token))
             conn.commit()
-        crit = _describe_alert({"brand": brand, "category": category,
-                                "size_norm": size, "price_max_eur": price_max})
+    except Exception as e:  # noqa: BLE001
+        print(f"[alerts] DB signup failed: {type(e).__name__}: {e}")
+        return _msg("Couldn't save your alert — please try again later.", 500)
+
+    # Step 2 — send the confirmation. Failing here must NOT leave an orphan row
+    # the user can't confirm (and that would eat their per-email quota): roll it
+    # back so a retry starts clean. Distinct message + log so the cause is obvious.
+    crit = _describe_alert({"brand": brand, "category": category,
+                            "size_norm": size, "price_max_eur": price_max})
+    try:
         _send_email(
             email, "Confirm your Mekke alert",
             "You (or someone) asked for a Mekke alert:\n  " + crit + "\n\n"
@@ -173,8 +184,17 @@ def alerts_create():
             "Not you? Ignore this email — unconfirmed requests are deleted "
             "after 7 days.\nPrivacy: " + SITE_URL + "/privacy")
     except Exception as e:  # noqa: BLE001
-        print(f"[alerts] signup failed: {e}")
-        return _msg("Something went wrong — please try again later.", 500)
+        print(f"[alerts] SMTP send failed: {type(e).__name__}: {e} "
+              f"(host={os.getenv('SMTP_HOST')!r} port={os.getenv('SMTP_PORT')!r} "
+              f"user={os.getenv('SMTP_USER')!r} from={os.getenv('MAIL_FROM')!r})")
+        try:
+            with _pg() as conn:
+                conn.execute("DELETE FROM alerts WHERE token = %s", (token,))
+                conn.commit()
+        except Exception as e2:  # noqa: BLE001
+            print(f"[alerts] rollback failed: {e2}")
+        return _msg("We couldn't send the confirmation email (mail service error). "
+                    "Nothing was saved — please try again later.", 502)
     return _msg("Almost done — check your inbox and click the confirmation link. "
                 "(Unconfirmed requests self-delete after 7 days.)")
 
