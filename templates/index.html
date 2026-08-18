@@ -53,7 +53,23 @@
     <div class="sub">Archive Japanese designer pieces, found & reorganised · {{ items|length }} / {{ total }} pieces · redirects to Mercari</div>
   </header>
 
-  {% if waitlist_action %}
+  {% if alerts_enabled %}
+  <form class="waitlist" action="/alerts" method="POST">
+    <span>Get an email when fresh matches drop:</span>
+    <select name="brand"><option value="">Any brand</option>
+      {% for key, name in display.items() %}<option value="{{ key }}">{{ name }}</option>{% endfor %}
+    </select>
+    <select name="category"><option value="">Any category</option>
+      {% for c, n in options.categories %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+    </select>
+    <input name="size" placeholder="Size (opt.)" maxlength="6" style="width:90px">
+    <input type="number" name="price_max" min="1" placeholder="€ max" style="width:90px">
+    <input type="email" name="email" placeholder="your@email.com" required>
+    <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+    <button type="submit">Create alert</button>
+    <a href="/privacy" style="color:var(--muted);font-size:11px;text-decoration:none">privacy</a>
+  </form>
+  {% elif waitlist_action %}
   <form class="waitlist" action="{{ waitlist_action }}" method="POST">
     <span>New archive pieces drop daily - get notified:</span>
     <input type="email" name="email" placeholder="your@email.com" required>
@@ -139,6 +155,5 @@
       }});
     }, true);
   </script>
-  {% if analytics_token %}<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "{{ analytics_token }}"}'></script>{% endif %}
 </body>
 </html>

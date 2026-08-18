@@ -30,16 +30,10 @@ SKIMLINKS_ID = os.getenv("SKIMLINKS_ID")
 # Emails live with the form provider, NOT in the ephemeral SQLite.
 WAITLIST_ACTION = os.getenv("WAITLIST_ACTION")
 
-# Cloudflare Web Analytics token (free, privacy-friendly). Unset -> no tracking.
-ANALYTICS_TOKEN = os.getenv("CF_ANALYTICS_TOKEN")
+# NOTE: the legacy Cloudflare beacon was removed 2026-08-06 (dead code since
+# Plausible took over — and an unpinned third-party script was a semgrep flag).
 
 app = Flask(__name__)
-
-
-@app.context_processor
-def inject_globals():
-    # makes {{ analytics_token }} available to every template
-    return {"analytics_token": ANALYTICS_TOKEN}
 
 
 # Single source of truth = brands.yaml (via the brands.py loader): a brand added
@@ -107,6 +101,125 @@ def _log_click_persistent(listing_id: str, brand: str | None, dest: str) -> None
         print(f"[clicks] persistent log failed (non-blocking): {e}")
 
 
+# --- Saved-search alerts ('the bot') — [PO 2026-08-06] -----------------------
+# No accounts, no passwords: email + criteria + double opt-in + one-click
+# erasure. See alerts.py for the sending job and the GDPR design notes.
+import re as _re          # noqa: E402
+import secrets as _secrets  # noqa: E402
+
+from alerts import (       # noqa: E402
+    ALERTS_DDL, describe as _describe_alert,
+    send_email as _send_email, smtp_ready as _smtp_ready,
+)
+
+SITE_URL = (os.getenv("SITE_URL") or "https://mekke.co").rstrip("/")
+ALERTS_ENABLED = bool(DATABASE_URL) and _smtp_ready()
+MAX_ALERTS_PER_EMAIL = 5
+_EMAIL_RE = _re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+_TOKEN_RE = _re.compile(r"^[A-Za-z0-9_\-]{20,64}$")
+
+
+def _msg(text: str, code: int = 200):
+    return render_template("message.html", text=text), code
+
+
+def _pg():
+    import psycopg
+    return psycopg.connect(DATABASE_URL, connect_timeout=5)
+
+
+@app.route("/alerts", methods=["POST"])
+def alerts_create():
+    if not ALERTS_ENABLED:
+        abort(404)
+    if request.form.get("website"):  # honeypot — bots fill every field
+        return redirect("/")
+    email = (request.form.get("email") or "").strip().lower()
+    if len(email) > 254 or not _EMAIL_RE.match(email):
+        return _msg("Invalid email address.", 400)
+    # Strict allowlists — user input never reaches SQL text or emails raw.
+    brand = request.form.get("brand") or None
+    if brand is not None and brand not in DISPLAY:
+        brand = None
+    category = request.form.get("category") or None
+    if category is not None and not _re.fullmatch(r"[A-Za-z\- ]{2,20}", category):
+        category = None
+    size = (request.form.get("size") or "").strip().upper() or None
+    if size is not None and not _re.fullmatch(r"[A-Z0-9]{1,6}", size):
+        size = None
+    price_max = _to_int(request.form.get("price_max"))
+    if price_max is not None and not (1 <= price_max <= 100_000):
+        price_max = None
+    token = _secrets.token_urlsafe(32)
+    try:
+        with _pg() as conn:
+            conn.execute(ALERTS_DDL)
+            n = conn.execute("SELECT count(*) FROM alerts WHERE email = %s",
+                             (email,)).fetchone()[0]
+            if n >= MAX_ALERTS_PER_EMAIL:
+                return _msg(f"Alert limit reached ({MAX_ALERTS_PER_EMAIL} per email). "
+                            "Unsubscribe from one first.", 429)
+            conn.execute(
+                "INSERT INTO alerts (email, brand, category, size_norm, "
+                "price_max_eur, token) VALUES (%s,%s,%s,%s,%s,%s)",
+                (email, brand, category, size, price_max, token))
+            conn.commit()
+        crit = _describe_alert({"brand": brand, "category": category,
+                                "size_norm": size, "price_max_eur": price_max})
+        _send_email(
+            email, "Confirm your Mekke alert",
+            "You (or someone) asked for a Mekke alert:\n  " + crit + "\n\n"
+            "Confirm it:\n  " + SITE_URL + "/alerts/confirm/" + token + "\n\n"
+            "Not you? Ignore this email — unconfirmed requests are deleted "
+            "after 7 days.\nPrivacy: " + SITE_URL + "/privacy")
+    except Exception as e:  # noqa: BLE001
+        print(f"[alerts] signup failed: {e}")
+        return _msg("Something went wrong — please try again later.", 500)
+    return _msg("Almost done — check your inbox and click the confirmation link. "
+                "(Unconfirmed requests self-delete after 7 days.)")
+
+
+@app.route("/alerts/confirm/<token>")
+def alerts_confirm(token):
+    if not DATABASE_URL or not _TOKEN_RE.match(token):
+        abort(404)
+    try:
+        with _pg() as conn:
+            row = conn.execute(
+                "UPDATE alerts SET confirmed_at = now() WHERE token = %s "
+                "RETURNING id", (token,)).fetchone()
+            conn.commit()
+    except Exception as e:  # noqa: BLE001
+        print(f"[alerts] confirm failed: {e}")
+        return _msg("Something went wrong — please try again later.", 500)
+    if not row:
+        return _msg("Unknown or expired link.", 404)
+    return _msg("Alert confirmed ✓ — you'll get an email whenever fresh "
+                "matching pieces drop. Unsubscribe anytime from any email.")
+
+
+@app.route("/alerts/unsubscribe/<token>")
+def alerts_unsubscribe(token):
+    if not DATABASE_URL or not _TOKEN_RE.match(token):
+        abort(404)
+    try:
+        with _pg() as conn:
+            row = conn.execute("DELETE FROM alerts WHERE token = %s RETURNING id",
+                               (token,)).fetchone()
+            conn.commit()
+    except Exception as e:  # noqa: BLE001
+        print(f"[alerts] unsubscribe failed: {e}")
+        return _msg("Something went wrong — please try again later.", 500)
+    if not row:
+        return _msg("Unknown or already-deleted link.", 404)
+    return _msg("Unsubscribed — this alert and your email were deleted immediately.")
+
+
+@app.route("/privacy")
+def privacy():
+    return render_template("privacy.html", contact=os.getenv("MAIL_FROM") or "the sender address of our emails")
+
+
 def age_bucket(listed_at_iso: str | None) -> tuple[str, bool]:
     """Return (readable age, is_new) where is_new = True if <1 day old."""
     if not listed_at_iso:
@@ -155,24 +268,30 @@ SORTS = {
 }
 
 
+# SECURITY (semgrep 2026-08-06): SQL text below is assembled ONLY from module
+# constants; every user-influenced value is bound through `?` placeholders, and
+# ORDER BY comes from the SORTS allowlist. No user input ever reaches SQL text.
+_BASE_WHERE = "status='active' AND brand IN (" + _PH + ")"
+
+
 def query_listings(brand=None, size=None, condition=None,
                    sort="new", price_min=None, price_max=None,
                    category=None) -> list[dict]:
-    sql = f"SELECT * FROM listings WHERE status='active' AND brand IN ({_PH})"
-    params = list(SHOWN_BRANDS)
-    if brand in DISPLAY:
-        sql += " AND brand = ?"; params.append(brand)
-    if category:
-        sql += " AND category_norm = ?"; params.append(category)
-    if size:
-        sql += " AND size_norm = ?"; params.append(size)
-    if condition:
-        sql += " AND condition_norm = ?"; params.append(condition)
-    if price_min is not None:
-        sql += " AND price_eur >= ?"; params.append(price_min)
-    if price_max is not None:
-        sql += " AND price_eur <= ?"; params.append(price_max)
-    sql += " " + SORTS.get(sort, SORTS["new"])
+    where = [_BASE_WHERE]
+    params: list = list(SHOWN_BRANDS)
+    for clause, value in (
+        ("brand = ?", brand if brand in DISPLAY else None),
+        ("category_norm = ?", category),
+        ("size_norm = ?", size),
+        ("condition_norm = ?", condition),
+        ("price_eur >= ?", price_min),
+        ("price_eur <= ?", price_max),
+    ):
+        if value is not None:
+            where.append(clause)
+            params.append(value)
+    order = SORTS.get(sort, SORTS["new"])  # allowlist — never raw user input
+    sql = "SELECT * FROM listings WHERE " + " AND ".join(where) + " " + order
     conn = _conn()
     rows = conn.execute(sql, params).fetchall()
     conn.close()
@@ -183,8 +302,8 @@ def brand_counts() -> dict[str, int]:
     conn = _conn()
     counts = {b: 0 for b in DISPLAY}
     for brand, n in conn.execute(
-        f"SELECT brand, COUNT(*) FROM listings WHERE status='active' "
-        f"AND brand IN ({_PH}) GROUP BY brand", SHOWN_BRANDS
+        "SELECT brand, COUNT(*) FROM listings WHERE " + _BASE_WHERE + " GROUP BY brand",
+        SHOWN_BRANDS,
     ):
         counts[brand] = n
     conn.close()
@@ -195,15 +314,15 @@ def filter_options() -> dict[str, list[str]]:
     """Distinct sizes/conditions available among shown active listings, ordered sensibly."""
     conn = _conn()
     sizes = [r[0] for r in conn.execute(
-        f"SELECT DISTINCT size_norm FROM listings WHERE status='active' "
-        f"AND brand IN ({_PH}) AND size_norm IS NOT NULL", SHOWN_BRANDS)]
+        "SELECT DISTINCT size_norm FROM listings WHERE " + _BASE_WHERE +
+        " AND size_norm IS NOT NULL", SHOWN_BRANDS)]
     conds = [r[0] for r in conn.execute(
-        f"SELECT DISTINCT condition_norm FROM listings WHERE status='active' "
-        f"AND brand IN ({_PH}) AND condition_norm IS NOT NULL", SHOWN_BRANDS)]
+        "SELECT DISTINCT condition_norm FROM listings WHERE " + _BASE_WHERE +
+        " AND condition_norm IS NOT NULL", SHOWN_BRANDS)]
     cats = conn.execute(
-        f"SELECT category_norm, COUNT(*) FROM listings WHERE status='active' "
-        f"AND brand IN ({_PH}) AND category_norm IS NOT NULL "
-        f"GROUP BY category_norm ORDER BY COUNT(*) DESC", SHOWN_BRANDS).fetchall()
+        "SELECT category_norm, COUNT(*) FROM listings WHERE " + _BASE_WHERE +
+        " AND category_norm IS NOT NULL GROUP BY category_norm ORDER BY COUNT(*) DESC",
+        SHOWN_BRANDS).fetchall()
     conn.close()
 
     # Sizes grouped by garment area (PO request: tops/bottoms were all mixed).
@@ -259,6 +378,7 @@ def index():
         price_min=price_min,
         price_max=price_max,
         waitlist_action=WAITLIST_ACTION,
+        alerts_enabled=ALERTS_ENABLED,
     )
 
 
@@ -302,4 +422,5 @@ def go(id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    # Never ship debug to prod (semgrep): opt-in via FLASK_DEBUG=1 locally only.
+    app.run(debug=os.getenv("FLASK_DEBUG") == "1", port=5000)

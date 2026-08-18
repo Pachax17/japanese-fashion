@@ -19,9 +19,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 50   # 15 brands × cap 150 × politeness delay ≈ 30-35 min of scrape
     steps:
-      - uses: actions/checkout@v5
+      # Pinned to full commit SHAs (semgrep: mutable tags enable supply-chain
+      # attacks — a repointed tag runs attacker code with our secrets).
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
         with:
           python-version: "3.12"
           cache: pip
@@ -53,6 +55,18 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: python history.py
+
+      - name: Send saved-search alert emails   # ['the bot', PO 2026-08-06]
+        # Double opt-in alerts: emails the NEW listings matching each confirmed
+        # saved search. Missing secrets -> silent no-op. Never fails the pipeline.
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+        run: python alerts.py
 
       - name: Safety check — refuse to wipe the catalog
         # If Mercari blocked the cloud IP, scrape returns ~0 items. Don't commit
