@@ -184,8 +184,9 @@ def alerts_create():
             "Not you? Ignore this email — unconfirmed requests are deleted "
             "after 7 days.\nPrivacy: " + SITE_URL + "/privacy")
     except Exception as e:  # noqa: BLE001
-        print(f"[alerts] SMTP send failed: {type(e).__name__}: {e} "
-              f"(host={os.getenv('SMTP_HOST')!r} port={os.getenv('SMTP_PORT')!r} "
+        print(f"[alerts] mail send failed: {type(e).__name__}: {e} "
+              f"(transport={'api' if os.getenv('BREVO_API_KEY') else 'smtp'} "
+              f"host={os.getenv('SMTP_HOST')!r} port={os.getenv('SMTP_PORT')!r} "
               f"user={os.getenv('SMTP_USER')!r} from={os.getenv('MAIL_FROM')!r})")
         try:
             with _pg() as conn:
